@@ -28,7 +28,11 @@ function useFetch<T>(url: string): UseFetchResult<T> {
     async function fetchData() {
       try {
         const response = await fetch(url, { signal: controller.signal });
-        // In case 404 or 500 is returned, fetch doesn't throw error
+        /*
+          response.ok is true only for 200-299 status codes, for everything
+          else the value will be false. So use it to handle failures like
+          404 (client side errors) or 500 (server side errors)
+        */
         if (!response.ok) {
           throw new Error(`Request failed with Status ${response.status}`);
         }
