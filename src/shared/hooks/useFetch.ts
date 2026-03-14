@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-interface IUseFetchResult<T> {
+interface UseFetchResult<T> {
   data: T | null;
   error: string | null;
   loading: boolean;
 }
 
-function useFetch<T>(url: string): IUseFetchResult<T> {
+function useFetch<T>(url: string): UseFetchResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,8 +45,7 @@ function useFetch<T>(url: string): IUseFetchResult<T> {
         );
       } finally {
         /*
-          Avoid updating the state when the request is aborted.
-          If we don't do this, the state will change and we want to aovoid
+          Only update loading state if we didn't abort
         */
         if (!controller.signal.aborted) {
           setLoading(false);

@@ -1,10 +1,10 @@
-export interface ICategory {
+export interface Category {
   slug: string;
   name: string;
   url: string;
 }
 
-export interface IReview {
+export interface Review {
   rating: number;
   comment: string;
   date: string;
@@ -12,7 +12,7 @@ export interface IReview {
   reviewerEmail: string;
 }
 
-export interface IProduct {
+export interface Product {
   id: number;
   title: string;
   category: string;
@@ -24,7 +24,7 @@ export interface IProduct {
   thumbnail: string;
 }
 
-export interface IProductDetail extends IProduct {
+export interface ProductDetail extends Product {
   description: string;
   images: string[];
   tags: string[];
@@ -32,11 +32,11 @@ export interface IProductDetail extends IProduct {
   warrantyInformation: string;
   shippingInformation: string;
   availabilityStatus: string;
-  reviews: IReview[];
+  reviews: Review[];
 }
 
-export interface IProductResponse {
-  products: IProduct[],
+export interface ProductResponse {
+  products: Product[],
   total: number;
   skip: number;
   limit: number;
