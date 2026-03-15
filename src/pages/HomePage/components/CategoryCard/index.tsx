@@ -65,7 +65,7 @@ function CategoryCard({ category }: CategoryCardProps) {
       className="bg-zinc-950 border-zinc-800 border rounded-xl p-5 flex flex-col items-center justify-center gap-3 transition duration-300 hover:border-yellow-600 hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-900/20"
     >
       <Icon size={28} strokeWidth={1.5} className="text-zinc-400" />
-      <p className="text-sm font-medium text-zinc-400 text-center">
+      <p className="text-sm font-medium text-zinc-300 text-center">
         {category.name}
       </p>
     </Link>
