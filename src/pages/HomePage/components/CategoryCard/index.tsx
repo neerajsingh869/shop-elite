@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import {
   Bike,
   Car,
@@ -21,9 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import type { CategoryCardProps } from "./CategoryCard.types";
-import { Link } from "react-router";
 import { ROUTES } from "../../../../shared/constants";
+import type { Category } from "../../../../shared/types/api.types";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   beauty: Sparkles,
@@ -50,7 +50,11 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "womens-jewellery": Gem,
   "womens-shoes": Footprints,
   "womens-watches": Watch,
-} as const;
+};
+
+interface CategoryCardProps {
+  category: Category;
+}
 
 function CategoryCard({ category }: CategoryCardProps) {
   const Icon: LucideIcon = CATEGORY_ICONS[category.slug] || ShoppingBag;
@@ -60,7 +64,7 @@ function CategoryCard({ category }: CategoryCardProps) {
       to={ROUTES.category(category.slug)}
       className="bg-zinc-950 border-zinc-800 border rounded-xl p-5 flex flex-col items-center justify-center gap-3 transition duration-300 hover:border-yellow-600 hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-900/20"
     >
-      <Icon className="text-zinc-400" />
+      <Icon size={28} strokeWidth={1.5} className="text-zinc-400" />
       <p className="text-sm font-medium text-zinc-400 text-center">
         {category.name}
       </p>
