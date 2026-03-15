@@ -36,7 +36,7 @@ export interface ProductDetail extends Product {
 }
 
 export interface ProductResponse {
-  products: Product[],
+  products: Product[];
   total: number;
   skip: number;
   limit: number;
