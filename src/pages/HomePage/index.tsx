@@ -32,8 +32,8 @@ function HomePage() {
         )}
       </header>
       {loading && <CategoryGridSkeleton />}
-      {error && <div className="text-red-400 text-sm">Error: {error}</div>}
-      {data && (
+      {!loading && error && <div className="text-red-400 text-sm">Error: {error}</div>}
+      {!loading && !error && data && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {data.map((category) => (
             <CategoryCard key={category.slug} category={category} />
