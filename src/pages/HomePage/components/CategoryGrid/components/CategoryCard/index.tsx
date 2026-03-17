@@ -22,8 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { ROUTES } from "../../../../shared/constants";
-import type { Category } from "../../../../shared/types/api.types";
+import { ROUTES } from "../../../../../../shared/constants";
+import type { Category } from "../../../../../../shared/types/api.types";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   beauty: Sparkles,
