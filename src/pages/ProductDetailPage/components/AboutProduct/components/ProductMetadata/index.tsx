@@ -1,7 +1,6 @@
 import type { ProductDetail } from "../../../../../../shared/types/api.types";
 import MoreInfo from "../MoreInfo";
 import Tag from "../Tag";
-import ProductMetadataSkeleton from "./skeleton";
 
 interface ProductMetadataProps {
   data: ProductDetail;
@@ -10,7 +9,6 @@ interface ProductMetadataProps {
 function ProductMetadata({ data }: ProductMetadataProps) {
   return (
     <>
-      <ProductMetadataSkeleton />
       {/* Product description */}
       <p className="text-zinc-400 text-sm leading-5.5">{data.description}</p>
       {/* More info about product */}
