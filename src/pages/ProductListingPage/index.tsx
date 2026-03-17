@@ -1,11 +1,11 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import useFetch from "../../shared/hooks/useFetch";
-import ProductCard from "./components/ProductCard";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
-import ProductListingGridSkeleton from "./components/Skeleton";
 import type { ProductResponse } from "../../shared/types/api.types";
-import { GET_PRODUCTS_BY_CATEGORY_URL, ROUTES } from "../../shared/constants";
+import { GET_PRODUCTS_BY_CATEGORY_URL } from "../../shared/constants";
+import ProductGrid from "./components/ProductGrid";
+import ProductListingGridSkeleton from "./components/ProductGrid/skeleton";
 
 function ProductListingPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -41,21 +41,14 @@ function ProductListingPage() {
           )}
         </div>
       </header>
-      {loading && <ProductListingGridSkeleton />}
-      {!loading && error && (
+      {loading ? (
+        <ProductListingGridSkeleton />
+      ) : error ? (
         <div className="text-red-400 text-sm">Error: {error}</div>
-      )}
-      {!loading && !error && data && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {data.products.map((product) => (
-            <Link
-              key={product.id}
-              to={ROUTES.product(categorySlug!, product.id, product.title)}
-            >
-              <ProductCard product={product} />
-            </Link>
-          ))}
-        </div>
+      ) : (
+        data && (
+          <ProductGrid products={data.products} categorySlug={categorySlug!} />
+        )
       )}
     </>
   );
