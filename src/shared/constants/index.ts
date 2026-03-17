@@ -2,6 +2,8 @@ export const BASE_URL = "https://dummyjson.com";
 export const GET_CATEGORIES_URL = `${BASE_URL}/products/categories`;
 export const GET_PRODUCTS_BY_CATEGORY_URL = (categorySlug: string) =>
   `${BASE_URL}/products/category/${categorySlug}`;
+export const GET_PRODUCT_URL = (productId: number) =>
+  `${BASE_URL}/products/${productId}`;
 
 function createProductSlug(title: string): string {
   const productSlug = title
