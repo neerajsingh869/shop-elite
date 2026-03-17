@@ -3,9 +3,9 @@ import { Dot } from "lucide-react";
 import { GET_CATEGORIES_URL } from "../../shared/constants";
 import useFetch from "../../shared/hooks/useFetch";
 import type { Category } from "../../shared/types/api.types";
-import CategoryCard from "./components/CategoryCard";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
-import CategoryGridSkeleton from "./components/Skeleton";
+import CategoryGridSkeleton from "./components/CategoryGrid/skeleton";
+import CategoryGrid from "./components/CategoryGrid";
 
 function HomePage() {
   const { data, error, loading } = useFetch<Category[]>(GET_CATEGORIES_URL);
@@ -31,14 +31,12 @@ function HomePage() {
           </p>
         )}
       </header>
-      {loading && <CategoryGridSkeleton />}
-      {!loading && error && <div className="text-red-400 text-sm">Error: {error}</div>}
-      {!loading && !error && data && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {data.map((category) => (
-            <CategoryCard key={category.slug} category={category} />
-          ))}
-        </div>
+      {loading ? (
+        <CategoryGridSkeleton />
+      ) : error ? (
+        <div className="text-red-400 text-sm">Error: {error}</div>
+      ) : (
+        data && <CategoryGrid data={data} />
       )}
     </>
   );
