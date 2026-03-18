@@ -3,9 +3,11 @@ import { useParams } from "react-router";
 import useFetch from "../../shared/hooks/useFetch";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
 import type { ProductResponse } from "../../shared/types/api.types";
-import { GET_PRODUCTS_BY_CATEGORY_URL } from "../../shared/constants";
+import { GET_PRODUCTS_BY_CATEGORY_URL, ROUTES } from "../../shared/constants";
 import ProductGrid from "./components/ProductGrid";
 import ProductListingGridSkeleton from "./components/ProductGrid/skeleton";
+import BackButton from "../../shared/components/ui/BackButton";
+import getCategoryName from "../../shared/utils/getCategoryName";
 
 function ProductListingPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -14,16 +16,12 @@ function ProductListingPage() {
   );
   const { topRef } = useScrollToTop(loading);
 
-  const categoryName = categorySlug
-    ? categorySlug
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    : "Unknown";
+  const categoryName = getCategoryName(categorySlug);
 
   return (
     <>
       <div className="absolute top-0" ref={topRef}></div>
+      <BackButton to={ROUTES.home} label="All Categories" />
       <header className="mb-6">
         <p className="text-xs text-yellow-500 uppercase tracking-widest mb-1">
           {categoryName}
