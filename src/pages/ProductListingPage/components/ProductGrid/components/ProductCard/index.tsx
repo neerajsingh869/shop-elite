@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import type { Product } from "../../../../shared/types/api.types";
+import type { Product } from "../../../../../../shared/types/api.types";
 
 interface ProductCardProps {
   product: Product;
