@@ -5,7 +5,7 @@ import { ROUTES } from "../../../../../../shared/constants";
 
 interface ProductCardProps {
   product: Product;
-  categorySlug: string;
+  categorySlug?: string;
 }
 
 function ProductCard({ product, categorySlug }: ProductCardProps) {
