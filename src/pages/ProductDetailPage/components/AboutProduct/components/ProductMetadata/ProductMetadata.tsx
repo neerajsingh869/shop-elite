@@ -1,6 +1,6 @@
 import type { ProductDetail } from "../../../../../../shared/types/api.types";
-import MoreInfo from "../MoreInfo";
-import Tag from "../Tag";
+import MoreInfo from "../MoreInfo/MoreInfo";
+import Tag from "../Tag/Tag";
 
 interface ProductMetadataProps {
   data: ProductDetail;

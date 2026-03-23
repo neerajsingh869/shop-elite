@@ -1,4 +1,4 @@
-import ReviewProgressBarSkeleton from "./components/ReviewProgressBar/skeleton";
+import ReviewProgressBarSkeleton from "./components/ReviewProgressBar/ReviewProgressBarSkeleton";
 
 function ReviewProgressGridSkeleton() {
   return (

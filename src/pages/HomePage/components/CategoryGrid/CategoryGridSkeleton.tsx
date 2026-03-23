@@ -1,4 +1,4 @@
-import CategoryCardSkeleton from "./components/CategoryCard/skeleton";
+import CategoryCardSkeleton from "./components/CategoryCard/CategoryCardSkeleton";
 
 function CategoryGridSkeleton() {
   return (

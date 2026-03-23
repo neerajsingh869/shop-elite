@@ -1,4 +1,4 @@
-import ProductMetadataSkeleton from "./components/ProductMetadata/skeleton";
+import ProductMetadataSkeleton from "./components/ProductMetadata/ProductMetadataSkeleton";
 
 function AboutProductSkeleton() {
   return (

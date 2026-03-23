@@ -1,5 +1,5 @@
-import ReviewMetadataTitleSkeleton from "./components/ReviewMetadataTitle/skeleton";
-import ReviewProgressGridSkeleton from "./components/ReviewProgressGrid/skeleton";
+import ReviewMetadataTitleSkeleton from "./components/ReviewMetadataTitle/ReviewMetadataTitleSkeleton";
+import ReviewProgressGridSkeleton from "./components/ReviewProgressGrid/ReviewProgressGridSkeleton";
 
 function ReviewsMetadataSkeleton() {
   return (

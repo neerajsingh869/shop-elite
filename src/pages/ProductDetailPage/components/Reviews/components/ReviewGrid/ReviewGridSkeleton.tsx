@@ -1,4 +1,4 @@
-import ReviewCardSkeleton from "./components/ReviewCard/skeleton";
+import ReviewCardSkeleton from "./components/ReviewCard/ReviewCardSkeleton";
 
 function ReviewGridSkeleton() {
   return (

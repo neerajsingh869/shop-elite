@@ -1,6 +1,6 @@
 import type { Review } from "../../../../../../shared/types/api.types";
-import ReviewForm from "./components/ReviewForm";
-import WriteReviewTitle from "./components/WriteReviewTitle";
+import ReviewForm from "./components/ReviewForm/ReviewForm";
+import WriteReviewTitle from "./components/WriteReviewTitle/WriteReviewTitle";
 
 interface WriteReviewProps {
   addReview: (reviewToAdd: Review) => void;

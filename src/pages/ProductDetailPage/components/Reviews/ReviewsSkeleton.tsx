@@ -1,6 +1,6 @@
-import ReviewGridSkeleton from "./components/ReviewGrid/skeleton";
-import ReviewsMetadataSkeleton from "./components/ReviewsMetadata/skeleton";
-import WriteReview from "./components/WriteReview";
+import ReviewGridSkeleton from "./components/ReviewGrid/ReviewGridSkeleton";
+import ReviewsMetadataSkeleton from "./components/ReviewsMetadata/ReviewsMetadataSkeleton";
+import WriteReview from "./components/WriteReview/WriteReview";
 
 function ReviewsSkeleton() {
   return (

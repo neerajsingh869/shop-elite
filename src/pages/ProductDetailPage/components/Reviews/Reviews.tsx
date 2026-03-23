@@ -1,8 +1,8 @@
 import type { Review } from "../../../../shared/types/api.types";
 
-import WriteReview from "./components/WriteReview";
-import ReviewsMetadata from "./components/ReviewsMetadata";
-import ReviewGrid from "./components/ReviewGrid";
+import WriteReview from "./components/WriteReview/WriteReview";
+import ReviewsMetadata from "./components/ReviewsMetadata/ReviewsMetadata";
+import ReviewGrid from "./components/ReviewGrid/ReviewGrid";
 import { useState } from "react";
 
 interface ReviewsProps {

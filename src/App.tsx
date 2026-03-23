@@ -2,13 +2,13 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 
 import "./App.css";
-import Header from "./shared/components/Header";
-import SuspenseFallback from "./shared/components/SuspenseFallback";
+import Header from "./shared/components/Header/Header";
+import SuspenseFallback from "./shared/components/SuspenseFallback/SuspenseFallback";
 
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
-const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
-const ProductListingPage = lazy(() => import("./pages/ProductListingPage"));
-const HomePage = lazy(() => import("./pages/HomePage"));
+const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage/ProductDetail"));
+const ProductListingPage = lazy(() => import("./pages/ProductListingPage/ProductListing"));
+const HomePage = lazy(() => import("./pages/HomePage/Home"));
 
 function App() {
   return (

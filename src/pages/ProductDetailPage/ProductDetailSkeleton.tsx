@@ -1,6 +1,6 @@
-import ImageGallarySkeleton from "./components/ImageGallery/skeleton";
-import AboutProductSkeleton from "./components/AboutProduct/skeleton";
-import ReviewsSkeleton from "./components/Reviews/skeleton";
+import ImageGallarySkeleton from "./components/ImageGallery/ImageGallerySkeleton";
+import AboutProductSkeleton from "./components/AboutProduct/AboutProductSkeleton";
+import ReviewsSkeleton from "./components/Reviews/ReviewsSkeleton";
 
 function ProductDetailPageSkeleton() {
   return (
