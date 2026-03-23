@@ -1,3 +1,5 @@
+import createProductSlug from "../utils/createProductSlug";
+
 export const BASE_URL = "https://dummyjson.com";
 export const GET_CATEGORIES_URL = `${BASE_URL}/products/categories`;
 export const GET_PRODUCTS_BY_CATEGORY_URL = (categorySlug: string) =>
@@ -5,16 +7,11 @@ export const GET_PRODUCTS_BY_CATEGORY_URL = (categorySlug: string) =>
 export const GET_PRODUCT_URL = (productId: number) =>
   `${BASE_URL}/products/${productId}`;
 
-function createProductSlug(title: string): string {
-  const productSlug = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
-  return productSlug;
-}
+export const getSearchUrlForProducts = (
+  searchText: string,
+  limit = 0,
+  skip = 0,
+) => `${BASE_URL}/products/search?q=${searchText}&limit=${limit}&skip=${skip}`;
 
 export const ROUTES = {
   home: "/",
