@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Search, ShoppingCart, User } from "lucide-react";
 
-import SearchModal from "./components/SearchModal";
+import SearchModal from "./components/SearchModal/SearchModalHeader";
 import { ROUTES } from "../../constants";
 
 function Header() {

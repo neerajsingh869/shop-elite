@@ -1,5 +1,5 @@
 import type { Category } from "../../../../shared/types/api.types";
-import CategoryCard from "./components/CategoryCard";
+import CategoryCard from "./components/CategoryCard/CategoryCard";
 
 interface CategoryGridProps {
   data: Category[];

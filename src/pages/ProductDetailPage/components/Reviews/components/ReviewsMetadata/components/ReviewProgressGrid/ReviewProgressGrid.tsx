@@ -1,5 +1,5 @@
 import type { Review } from "../../../../../../../../shared/types/api.types";
-import ReviewProgressBar from "./components/ReviewProgressBar";
+import ReviewProgressBar from "./components/ReviewProgressBar/ReviewProgressBar";
 
 function getStarPercentage(starNum: number, reviews: Review[]) {
   const totalReviewsCount = reviews.length;

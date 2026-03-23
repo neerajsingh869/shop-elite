@@ -1,7 +1,7 @@
 import { Heart, Star } from "lucide-react";
 
 import type { ProductDetail } from "../../../../shared/types/api.types";
-import ProductMetadata from "./components/ProductMetadata";
+import ProductMetadata from "./components/ProductMetadata/ProductMetadata";
 
 interface AboutProductProps {
   data: ProductDetail;

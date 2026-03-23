@@ -4,8 +4,8 @@ import { GET_CATEGORIES_URL } from "../../shared/constants";
 import useFetch from "../../shared/hooks/useFetch";
 import type { Category } from "../../shared/types/api.types";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
-import CategoryGridSkeleton from "./components/CategoryGrid/skeleton";
-import CategoryGrid from "./components/CategoryGrid";
+import CategoryGridSkeleton from "./components/CategoryGrid/CategoryGridSkeleton";
+import CategoryGrid from "./components/CategoryGrid/CategoryGrid";
 
 function HomePage() {
   const { data, error, loading } = useFetch<Category[]>(GET_CATEGORIES_URL);

@@ -1,5 +1,5 @@
 import type { Review } from "../../../../../../shared/types/api.types";
-import ReviewCard from "./components/ReviewCard";
+import ReviewCard from "./components/ReviewCard/ReviewCard";
 
 interface ReviewGridProps {
   reviews: Review[];

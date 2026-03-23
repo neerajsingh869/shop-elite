@@ -4,7 +4,7 @@ import { Search, X } from "lucide-react";
 
 import type { ProductResponse } from "../../../../types/api.types";
 
-import ProductCard from "./components/ProductCard";
+import ProductCard from "./components/ProductCard/ProductCardHeader";
 import getCategoryName from "../../../../utils/getCategoryName";
 import { getSearchUrlForProducts, ROUTES } from "../../../../constants";
 

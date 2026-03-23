@@ -1,5 +1,5 @@
-import MoreInfoSkeleton from "../MoreInfo/skeleton";
-import TagSkeleton from "../Tag/skeleton";
+import MoreInfoSkeleton from "../MoreInfo/MoreInfoSkeleton";
+import TagSkeleton from "../Tag/TagSkeleton";
 
 function ProductMetadataSkeleton() {
   return (

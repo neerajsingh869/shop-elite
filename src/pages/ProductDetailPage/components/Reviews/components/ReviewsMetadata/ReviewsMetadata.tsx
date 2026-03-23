@@ -1,7 +1,7 @@
 import type { Review } from "../../../../../../shared/types/api.types";
 
-import ReviewProgressGrid from "./components/ReviewProgressGrid";
-import ReviewMetadataTitle from "./components/ReviewMetadataTitle";
+import ReviewProgressGrid from "./components/ReviewProgressGrid/ReviewProgressGrid";
+import ReviewMetadataTitle from "./components/ReviewMetadataTitle/ReviewMetadataTitle";
 
 interface ReviewsMetadataProps {
   reviews: Review[];

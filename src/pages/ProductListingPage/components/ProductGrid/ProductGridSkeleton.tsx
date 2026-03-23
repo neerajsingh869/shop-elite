@@ -1,4 +1,4 @@
-import ProductCardSkeleton from "./components/ProductCard/skeleton";
+import ProductCardSkeleton from "./components/ProductCard/ProductCardSkeleton";
 
 function ProductListingGridSkeleton() {
   return (
