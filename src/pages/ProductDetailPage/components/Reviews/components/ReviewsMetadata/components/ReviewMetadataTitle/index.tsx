@@ -15,7 +15,9 @@ function ReviewMetadataTitle({
       <div className="py-1 flex gap-3 items-center w-full">
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((num) => {
-            if (num <= Math.ceil(totalRating)) {
+            console.log(totalRating);
+            console.log(Math.round(totalRating));
+            if (num <= Math.round(totalRating)) {
               return (
                 <Star
                   size={12}
@@ -28,8 +30,8 @@ function ReviewMetadataTitle({
             return (
               <Star
                 size={12}
-                fill="oklch(85.2% 0.199 91.936)"
-                color="oklch(85.2% 0.199 91.936)"
+                fill="oklch(0.552 0.016 285.938)"
+                color="oklch(0.552 0.016 285.938)"
                 strokeWidth={1.5}
               />
             );

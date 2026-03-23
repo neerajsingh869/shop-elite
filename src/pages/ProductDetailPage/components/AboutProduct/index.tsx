@@ -23,7 +23,7 @@ function AboutProduct({ data }: AboutProductProps) {
       <div className="py-3 border-y flex gap-3 items-center w-full border-y-zinc-800">
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((num) => {
-            if (num <= Math.ceil(data.rating)) {
+            if (num <= Math.round(data.rating)) {
               return (
                 <Star
                   size={12}
