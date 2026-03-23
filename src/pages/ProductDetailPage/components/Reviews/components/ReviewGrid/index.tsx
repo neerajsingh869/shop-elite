@@ -9,7 +9,7 @@ function ReviewGrid({ reviews }: ReviewGridProps) {
   return (
     <div>
       {reviews.map((reviewInfo) => (
-        <ReviewCard key={reviewInfo.date} reviewInfo={reviewInfo} />
+        <ReviewCard key={`${reviewInfo.date} ${reviewInfo.reviewerEmail}`} reviewInfo={reviewInfo} />
       ))}
     </div>
   );

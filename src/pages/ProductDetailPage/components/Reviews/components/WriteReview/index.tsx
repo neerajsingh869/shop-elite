@@ -1,11 +1,16 @@
+import type { Review } from "../../../../../../shared/types/api.types";
 import ReviewForm from "./components/ReviewForm";
 import WriteReviewTitle from "./components/WriteReviewTitle";
 
-function WriteReview() {
+interface WriteReviewProps {
+  addReview: (reviewToAdd: Review) => void;
+}
+
+function WriteReview({ addReview }: WriteReviewProps) {
   return (
     <section className="flex flex-col gap-4">
       <WriteReviewTitle />
-      <ReviewForm />
+      <ReviewForm addReview={addReview} />
     </section>
   );
 }

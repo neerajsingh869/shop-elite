@@ -11,6 +11,7 @@ import Reviews from "./components/Reviews";
 import ProductDetailPageSkeleton from "./skeleton";
 import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
+import BackButtonSkeleton from "../../shared/components/ui/BackButtonSkeleton";
 
 interface PageParams extends Record<string, string> {
   categorySlug: string;
@@ -33,10 +34,14 @@ function ProductDetailPage() {
   return (
     <>
       <div className="absolute top-0" ref={topRef}></div>
-      <BackButton
-        to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
-        label={`Back to ${categoryName}`}
-      />
+      {loading ? (
+        <BackButtonSkeleton />
+      ) : (
+        <BackButton
+          to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+          label={`Back to ${categoryName}`}
+        />
+      )}
       {loading ? (
         <ProductDetailPageSkeleton />
       ) : error ? (
@@ -61,7 +66,11 @@ function ProductDetailPage() {
                 <AboutProduct data={data} />
               </div>
             </div>
-            <Reviews reviews={data.reviews} totalRating={data.rating} />
+            <Reviews
+              productId={productId}
+              reviews={data.reviews}
+              totalRating={data.rating}
+            />
           </>
         )
       )}
