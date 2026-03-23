@@ -23,7 +23,7 @@ function Header() {
       {showSearchModal && (
         <SearchModal setShowSearchModal={setShowSearchModal} />
       )}
-      <header className="sticky border-b border-b-zinc-800">
+      <header className="border-b border-b-zinc-800">
         <div className="max-w-7xl flex justify-between items-center mx-auto py-6 px-6 md:px-8">
           <Link to={ROUTES.home} className="text-xl text-yellow-500 font-bold">
             ShopElite
