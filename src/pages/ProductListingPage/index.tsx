@@ -8,6 +8,7 @@ import ProductGrid from "./components/ProductGrid";
 import ProductListingGridSkeleton from "./components/ProductGrid/skeleton";
 import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
+import BackButtonSkeleton from "../../shared/components/ui/BackButtonSkeleton";
 
 function ProductListingPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -21,7 +22,11 @@ function ProductListingPage() {
   return (
     <>
       <div className="absolute top-0" ref={topRef}></div>
-      <BackButton to={ROUTES.home} label="All Categories" />
+      {loading ? (
+        <BackButtonSkeleton />
+      ) : (
+        <BackButton to={ROUTES.home} label="All Categories" />
+      )}
       <header className="mb-6">
         <p className="text-xs text-yellow-500 uppercase tracking-widest mb-1">
           {categoryName}
