@@ -9,7 +9,6 @@ import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
 import CategoryNotFound from "./CategoryNotFound";
 import ProductListingSkeleton from "./ProductListingSkeleton";
-import ProductListingError from "./ProductListingError";
 
 function ProductListingPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -25,7 +24,7 @@ function ProductListingPage() {
       {loading ? (
         <ProductListingSkeleton />
       ) : error ? (
-        <ProductListingError errorMessage={error} />
+        <CategoryNotFound categoryName={categoryName} />
       ) : (
         data &&
         (data.products.length > 0 ? (
