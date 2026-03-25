@@ -2,16 +2,17 @@ import { Link, useParams } from "react-router";
 
 import type { ProductDetail } from "../../shared/types/api.types";
 
-import { GET_PRODUCT_URL, ROUTES } from "../../shared/constants";
+import ProductNotFound from "./ProductNotFound";
 import useFetch from "../../shared/hooks/useFetch";
+import Reviews from "./components/Reviews/Reviews";
+import ProductDetailError from "./ProductDetailError";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import BackButton from "../../shared/components/ui/BackButton";
+import ProductDetailPageSkeleton from "./ProductDetailSkeleton";
+import { GET_PRODUCT_URL, ROUTES } from "../../shared/constants";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import AboutProduct from "./components/AboutProduct/AboutProduct";
-import Reviews from "./components/Reviews/Reviews";
-import ProductDetailPageSkeleton from "./ProductDetailSkeleton";
-import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
-import ProductNotFound from "./ProductNotFound";
 import createProductSlug from "../../shared/utils/createProductSlug";
 
 interface PageParams extends Record<string, string> {
@@ -33,49 +34,50 @@ function ProductDetailPage() {
 
   const categoryName = getCategoryName(categorySlug);
 
+  if (loading) {
+    return <ProductDetailPageSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <ProductDetailError
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
+  if (!data || createProductSlug(data.title) !== productSlug) {
+    return <ProductNotFound categorySlug={categorySlug!} />;
+  }
+
   return (
     <>
-      {loading ? (
-        <ProductDetailPageSkeleton />
-      ) : error ? (
-        <ProductNotFound />
-      ) : data ? (
-        createProductSlug(data.title) === productSlug ? (
-          <>
-            <div className="absolute top-0" ref={topRef}></div>
-            <BackButton
-              to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
-              label={`Back to ${categoryName}`}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Image gallery */}
-              <ImageGallery images={data.images} />
-              <div className="flex flex-col gap-5 items-start">
-                {/* Link to go to product listing page for the category */}
-                <Link
-                  to={
-                    categorySlug ? ROUTES.category(categorySlug) : ROUTES.home
-                  }
-                  className="border border-yellow-700 rounded-full px-3 py-1 uppercase text-xs font-semibold tracking-wide text-yellow-500 bg-yellow-900/20"
-                >
-                  {categoryName}
-                </Link>
-                {/* All the important product information */}
-                <AboutProduct data={data} />
-              </div>
-            </div>
-            <Reviews
-              productId={productId}
-              reviews={data.reviews}
-              totalRating={data.rating}
-            />
-          </>
-        ) : (
-          <ProductNotFound />
-        )
-      ) : (
-        <ProductNotFound />
-      )}
+      <div className="absolute top-0" ref={topRef}></div>
+      <BackButton
+        to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+        label={`Back to ${categoryName}`}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Image gallery */}
+        <ImageGallery images={data.images} />
+        <div className="flex flex-col gap-5 items-start">
+          {/* Link to go to product listing page for the category */}
+          <Link
+            to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+            className="border border-yellow-700 rounded-full px-3 py-1 uppercase text-xs font-semibold tracking-wide text-yellow-500 bg-yellow-900/20"
+          >
+            {categoryName}
+          </Link>
+          {/* All the important product information */}
+          <AboutProduct data={data} />
+        </div>
+      </div>
+      <Reviews
+        productId={productId}
+        reviews={data.reviews}
+        totalRating={data.rating}
+      />
     </>
   );
 }
