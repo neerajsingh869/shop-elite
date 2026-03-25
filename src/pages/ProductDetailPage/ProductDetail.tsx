@@ -11,7 +11,7 @@ import Reviews from "./components/Reviews/Reviews";
 import ProductDetailPageSkeleton from "./ProductDetailSkeleton";
 import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
-import BackButtonSkeleton from "../../shared/components/ui/BackButtonSkeleton";
+import ProductNotFound from "./ProductNotFound";
 
 interface PageParams extends Record<string, string> {
   categorySlug: string;
@@ -33,46 +33,40 @@ function ProductDetailPage() {
 
   return (
     <>
-      <div className="absolute top-0" ref={topRef}></div>
-      {loading ? (
-        <BackButtonSkeleton />
-      ) : (
-        <BackButton
-          to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
-          label={`Back to ${categoryName}`}
-        />
-      )}
       {loading ? (
         <ProductDetailPageSkeleton />
       ) : error ? (
-        <div className="text-red-400 text-sm">Error: {error}</div>
-      ) : (
-        data && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Image gallery */}
-              <ImageGallery images={data.images} />
-              <div className="flex flex-col gap-5 items-start">
-                {/* Link to go to product listing page for the category */}
-                <Link
-                  to={
-                    categorySlug ? ROUTES.category(categorySlug) : ROUTES.home
-                  }
-                  className="border border-yellow-700 rounded-full px-3 py-1 uppercase text-xs font-semibold tracking-wide text-yellow-500 bg-yellow-900/20"
-                >
-                  {categoryName}
-                </Link>
-                {/* All the important product information */}
-                <AboutProduct data={data} />
-              </div>
+        <ProductNotFound />
+      ) : data ? (
+        <>
+          <div className="absolute top-0" ref={topRef}></div>
+          <BackButton
+            to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+            label={`Back to ${categoryName}`}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Image gallery */}
+            <ImageGallery images={data.images} />
+            <div className="flex flex-col gap-5 items-start">
+              {/* Link to go to product listing page for the category */}
+              <Link
+                to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+                className="border border-yellow-700 rounded-full px-3 py-1 uppercase text-xs font-semibold tracking-wide text-yellow-500 bg-yellow-900/20"
+              >
+                {categoryName}
+              </Link>
+              {/* All the important product information */}
+              <AboutProduct data={data} />
             </div>
-            <Reviews
-              productId={productId}
-              reviews={data.reviews}
-              totalRating={data.rating}
-            />
-          </>
-        )
+          </div>
+          <Reviews
+            productId={productId}
+            reviews={data.reviews}
+            totalRating={data.rating}
+          />
+        </>
+      ) : (
+        <ProductNotFound />
       )}
     </>
   );
