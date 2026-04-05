@@ -8,26 +8,26 @@ datasource db {
 }
 
 model User {
-  id  String @id @default(cuid())
-  email String @unique
-  name  String
-  passwordHash  String?
-  googleId  String? @unique
-  avatarUrl String?
+  id           String  @id @default(cuid())
+  email        String  @unique
+  name         String
+  passwordHash String?
+  googleId     String? @unique
+  avatarUrl    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  refreshTokens RefreshToken[]  // one user can have many refresh tokens
+  refreshTokens RefreshToken[] // one user can have many refresh tokens
 }
 
 model RefreshToken {
-  id String @id @default(cuid())
-  tokenHash String @unique
-  userId  String
-  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-  isRevoked Boolean @default(false)
+  isRevoked Boolean  @default(false)
   userAgent String?
   ipAddress String?
   createdAt DateTime @default(now())
