@@ -12,6 +12,9 @@ const ProductListingPage = lazy(
 );
 const HomePage = lazy(() => import("../pages/HomePage/Home"));
 
+const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
+const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
+
 function AppRoutes() {
   return (
     <Suspense fallback={<SuspenseFallback />}>
@@ -24,6 +27,8 @@ function AppRoutes() {
           path="/:categorySlug/:productId/:productSlug"
           element={<ProductDetailPage />}
         />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
