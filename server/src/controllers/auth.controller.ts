@@ -84,6 +84,27 @@ export async function refresh(req: Request, res: Response) {
   }
 }
 
+export async function googleAuth(req: Request, res: Response) {
+  const { accessToken } = req.body;
+
+  if (!accessToken) {
+    res.status(400).json({ message: "Google access token is required" });
+    return;
+  }
+
+  try {
+    const result = await authService.googleAuth(accessToken);
+    setRefreshTokenCookie(res, result.refreshToken);
+    res.json({ user: result.user, accessToken: result.accessToken });
+  } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_GOOGLE_TOKEN") {
+      res.status(401).json({ message: "Invalid google token" });
+      return;
+    }
+    res.status(500).json({ message: "Google authentication failed" });
+  }
+}
+
 export async function logout(req: Request, res: Response) {
   const rawToken = getRefreshToken(req);
 

@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: env.CLIENT_URL,
-    credentials: true, // is required for cookies to be sent cross-origin
+    credentials: true, // required for cookies to be sent cross-origin
   }),
 );
 

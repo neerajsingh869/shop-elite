@@ -145,6 +145,65 @@ export async function refresh(rawRefreshToken: string) {
   };
 }
 
+export async function googleAuth(googleAccessToken: string) {
+  const response = await fetch(
+    "https://www.googleapis.com/oauth2/v3/userinfo",
+    {
+      headers: {
+        Authorization: `Bearer ${googleAccessToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("INVALID_GOOGLE_TOKEN");
+  }
+
+  const profile = (await response.json()) as {
+    sub: string;
+    name: string;
+    email: string;
+    picture: string;
+  };
+
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [{ googleId: profile.sub }, { email: profile.email }],
+    },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email: profile.email,
+        name: profile.name,
+        avatarUrl: profile.picture,
+        googleId: profile.sub,
+      },
+    });
+  } else if (!user.googleId) {
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        googleId: profile.sub,
+        avatarUrl: profile.picture ?? user.avatarUrl,
+      },
+    });
+  }
+
+  const tokens = await issueTokens(user);
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+    },
+    ...tokens,
+  };
+}
+
 export async function logout(rawRefreshToken: string) {
   const tokenHash = hashToken(rawRefreshToken);
   // Mark as revoked (doesn't throw error if no record exists - user is already logged out)
