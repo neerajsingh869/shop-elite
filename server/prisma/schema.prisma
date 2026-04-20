@@ -37,7 +37,7 @@ model RefreshToken {
 
 model Product {
   id                   Int      @id
-  productSlug          String   @unique
+  productSlug          String
   title                String
   description          String
   category             String
@@ -47,7 +47,7 @@ model Product {
   stock                Int
   tags                 String[]
   brand                String?
-  sku                  String @unique
+  sku                  String   @unique
   weight               Float
   dimensions           Json
   warrantyInformation  String
