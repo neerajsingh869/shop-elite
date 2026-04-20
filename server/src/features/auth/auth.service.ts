@@ -1,12 +1,12 @@
-import { prisma } from "../lib/prisma.js";
-import { comparePassword, hashPassword, hashToken } from "../utils/hash.js";
+import { prisma } from "../../lib/prisma.js";
+import { comparePassword, hashPassword, hashToken } from "../../utils/hash.js";
 
 import {
   signAccessToken,
   signRefreshToken,
   type TokenPayload,
   verfityRefreshToken,
-} from "../utils/jwt.js";
+} from "../../utils/jwt.js";
 
 interface User {
   id: string;

@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import { env } from "./config/env.js";
-import authRoutes from "./routes/auth.routes.js";
+import authRoutes from "./features/auth/auth.routes.js";
 
 const app = express();
 
