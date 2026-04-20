@@ -1,12 +1,12 @@
 import { raw, Request, Response } from "express";
 
-import * as authService from "../services/auth.service.js";
+import * as authService from "./auth.service.js";
 import {
   setRefreshTokenCookie,
   clearRefreshTokenCookie,
   getRefreshToken,
-} from "../utils/cookies.js";
-import { AuthRequest } from "../middlewares/authenticate.js";
+} from "../../utils/cookies.js";
+import { AuthRequest } from "../../middlewares/authenticate.js";
 
 export async function register(req: Request, res: Response) {
   const { name, email, password } = req.body;
