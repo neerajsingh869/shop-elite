@@ -1,4 +1,4 @@
-interface ProductFilters {
+export interface ProductFilters {
   keyword?: string;
   category?: string;
   brand?: string;
