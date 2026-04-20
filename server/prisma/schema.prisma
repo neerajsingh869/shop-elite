@@ -34,3 +34,40 @@ model RefreshToken {
 
   @@index([userId])
 }
+
+model Product {
+  id                   Int      @id
+  productSlug          String   @unique
+  title                String
+  description          String
+  category             String
+  price                Decimal
+  discountPercentage   Decimal
+  rating               Float
+  stock                Int
+  tags                 String[]
+  brand                String?
+  sku                  String @unique
+  weight               Float
+  dimensions           Json
+  warrantyInformation  String
+  shippingInformation  String
+  availabilityStatus   String
+  reviews              Review[]
+  returnPolicy         String
+  minimumOrderQuantity Int
+  meta                 Json
+  thumbnail            String
+  images               String[]
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  rating        Int
+  comment       String
+  date          DateTime
+  reviewerName  String
+  reviewerEmail String
+  product       Product  @relation(fields: [productId], references: [id])
+  productId     Int
+}
