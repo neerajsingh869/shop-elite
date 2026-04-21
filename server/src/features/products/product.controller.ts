@@ -29,7 +29,8 @@ function getSortBy(val: unknown): ProductFilters["sortBy"] {
     : undefined;
 }
 
-export async function searchProducts(req: Request, res: Response) {
+// GET /api/products/search?keyword=laptop&maxPrice=1000
+export async function searchProductsHandler(req: Request, res: Response) {
   const q = req.query;
 
   const filters: ProductFilters = {
@@ -48,12 +49,14 @@ export async function searchProducts(req: Request, res: Response) {
     const products = await productService.searchProducts(filters);
     res.json({ products });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("Search failed:", err);
+    res.status(500).json({ message: "Search failed. Please try again." });
   }
 }
 
-export async function searchProductsUsingLLM(req: Request, res: Response) {
+// POST /api/products/llm-search
+// Body: { userQuery: "apple laptops under 2000" }
+export async function llmSearchHandler(req: Request, res: Response) {
   const { userQuery } = req.body;
 
   if (!userQuery) {
@@ -64,9 +67,9 @@ export async function searchProductsUsingLLM(req: Request, res: Response) {
   try {
     const filters: ProductFilters = await extractFiltersFromQuery(userQuery);
     const products = await productService.searchProducts(filters);
-    res.json({ products, filters });
+    res.json({ products, filters }); // return filters so frontend can show "Searching for..."
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("LLM search failed:", err);
+    res.status(500).json({ message: "Search failed. Please try again." });
   }
 }
