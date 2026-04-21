@@ -16,6 +16,7 @@ const envSchema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   CLIENT_URL: z.string().default("http://localhost:5173"),
+  GROQ_API_KEY: z.string()
 });
 
 // safeParse returns { success, data, error } instead of throwing
