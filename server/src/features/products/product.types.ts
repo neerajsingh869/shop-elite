@@ -7,5 +7,5 @@ export interface ProductFilters {
   minDiscount?: number;
   minRating?: number;
   availabilityStatus?: string;
-  sortBy?: "price_asc" | "price_desc" | "rating_desc" | "discount_desc"
+  sortBy?: "price_asc" | "price_desc" | "rating_desc" | "discount_desc";
 }
