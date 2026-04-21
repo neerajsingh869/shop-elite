@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import * as productService from "./product.service.js";
 import { ProductFilters } from "./product.types.js";
+import { extractFiltersFromQuery } from "./product.llm.js";
 
 const VALID_SORT_VALUES = [
   "price_asc",
@@ -46,6 +47,24 @@ export async function searchProducts(req: Request, res: Response) {
   try {
     const products = await productService.searchProducts(filters);
     res.json({ products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+export async function searchProductsUsingLLM(req: Request, res: Response) {
+  const { userQuery } = req.body;
+
+  if (!userQuery) {
+    res.status(400).json({ message: "User query is required" });
+    return;
+  }
+
+  try {
+    const filters: ProductFilters = await extractFiltersFromQuery(userQuery);
+    const products = await productService.searchProducts(filters);
+    res.json({ products, filters });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong" });
