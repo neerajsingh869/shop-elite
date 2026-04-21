@@ -6,20 +6,28 @@ import {
 import { prisma } from "../../lib/prisma.js";
 import { ProductFilters } from "./product.types.js";
 
-function getOrderBy(
+// Cache metadata in memory — categories/brands rarely change
+// This prevents a DB hit on every single LLM search request
+let metadataCache: {
+  categories: string[];
+  brands: string[];
+  availabilityStatuses: string[];
+} | null = null;
+
+function buildOrderBy(
   sortBy: ProductFilters["sortBy"],
 ): ProductOrderByWithRelationInput {
   switch (sortBy) {
-    case "discount_desc":
-      return { discountPercentage: "desc" };
     case "price_asc":
       return { price: "asc" };
     case "price_desc":
       return { price: "desc" };
     case "rating_desc":
       return { rating: "desc" };
+    case "discount_desc":
+      return { discountPercentage: "desc" };
     default:
-      return { id: "asc" };
+      return { id: "asc" }; // deterministic default
   }
 }
 
@@ -37,29 +45,31 @@ export async function searchProducts(filters: ProductFilters) {
     ...(filters.availabilityStatus && {
       availabilityStatus: filters.availabilityStatus,
     }),
-    ...((filters.minPrice || filters.maxPrice) && {
+    ...((filters.minPrice !== undefined || filters.maxPrice !== undefined) && {
       price: {
-        ...(filters.minPrice && { gte: filters.minPrice }),
-        ...(filters.maxPrice && { lte: filters.maxPrice }),
+        ...(filters.minPrice !== undefined && { gte: filters.minPrice }),
+        ...(filters.maxPrice !== undefined && { lte: filters.maxPrice }),
       },
     }),
-    ...(filters.minDiscount && {
-      discountPercentage: { gte: filters.minDiscount },
-    }),
-    ...(filters.minRating && {
+    ...(filters.minRating !== undefined && {
       rating: { gte: filters.minRating },
+    }),
+    ...(filters.minDiscount !== undefined && {
+      discountPercentage: { gte: filters.minDiscount },
     }),
   };
 
-  const products = await prisma.product.findMany({
+  return prisma.product.findMany({
     where,
-    orderBy: getOrderBy(filters.sortBy),
+    orderBy: buildOrderBy(filters.sortBy),
+    // TODO: add pagination (skip/take) in next iteration
   });
-
-  return products;
 }
 
 export async function getProductMetadata() {
+  // Return cached value if available
+  if (metadataCache) return metadataCache;
+
   const [categoriesResponse, brandsResponse, availabilityStatusesResponse] =
     await Promise.allSettled([
       prisma.product.findMany({
@@ -76,28 +86,24 @@ export async function getProductMetadata() {
       }),
     ]);
 
-  const categories =
-    categoriesResponse.status === "fulfilled"
-      ? categoriesResponse.value.map(({ category }) => category)
-      : [];
-
-  const brands =
-    brandsResponse.status === "fulfilled"
-      ? brandsResponse.value
-          .map(({ brand }) => brand)
-          .filter((brand) => brand !== null)
-      : [];
-
-  const availabilityStatuses =
-    availabilityStatusesResponse.status === "fulfilled"
-      ? availabilityStatusesResponse.value.map(
-          ({ availabilityStatus }) => availabilityStatus,
-        )
-      : [];
-
-  return {
-    categories,
-    brands,
-    availabilityStatuses,
+  metadataCache = {
+    categories:
+      categoriesResponse.status === "fulfilled"
+        ? categoriesResponse.value.map(({ category }) => category)
+        : [],
+    brands:
+      brandsResponse.status === "fulfilled"
+        ? brandsResponse.value
+            .map(({ brand }) => brand)
+            .filter((brand) => brand !== null)
+        : [],
+    availabilityStatuses:
+      availabilityStatusesResponse.status === "fulfilled"
+        ? availabilityStatusesResponse.value.map(
+            ({ availabilityStatus }) => availabilityStatus,
+          )
+        : [],
   };
+
+  return metadataCache;
 }
