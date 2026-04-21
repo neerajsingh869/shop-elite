@@ -1,63 +1,75 @@
 import Groq from "groq-sdk";
 
 import { env } from "../../config/env.js";
-import * as productService from "./product.service.js";
+import { getProductMetadata } from "./product.service.js";
 import { ProductFilters } from "./product.types.js";
 
 const groq = new Groq({ apiKey: env.GROQ_API_KEY });
 
+function extractJson(text: string): string {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end === -1)
+    throw new Error("No JSON found in LLM response");
+  return text.substring(start, end + 1);
+}
+
+function buildSystemPrompt(metadata: {
+  categories: string[];
+  brands: string[];
+  availabilityStatuses: string[];
+}): string {
+  return `You are a product search filter extractor for an ecommerce store.
+
+  Given a user's natural language search query, extract structured filters and return ONLY a valid JSON object. 
+  No explanation, no markdown, no extra text — just the raw JSON.
+
+  Return only the fields you can confidently extract. Omit fields you cannot determine.
+
+  JSON shape:
+  {
+    "keyword": string,           // main product type e.g. "laptop", "dress"
+    "category": string,          // must be one of: ${JSON.stringify(metadata.categories)}
+    "brand": string,             // must be one of: ${JSON.stringify(metadata.brands)}
+    "minPrice": number,          // minimum price in USD
+    "maxPrice": number,          // maximum price in USD
+    "minDiscount": number,       // minimum discount percentage e.g. 20 for 20% off
+    "minRating": number,         // minimum rating e.g. 4 for 4+ stars
+    "availabilityStatus": string, // must be one of: ${JSON.stringify(metadata.availabilityStatuses)}
+    "sortBy": "price_asc" | "price_desc" | "rating_desc" | "discount_desc"
+  }
+
+  Examples:
+  User: "cheap apple laptops" → {"keyword":"laptop","brand":"Apple","sortBy":"price_asc"}
+  User: "highly rated beauty under 50" → {"keyword":"beauty","category":"beauty","maxPrice":50,"sortBy":"rating_desc"}
+  User: "in stock samsung phones" → {"keyword":"phone","brand":"Samsung","availabilityStatus":"In Stock"}`;
+}
+
 export async function extractFiltersFromQuery(
   userQuery: string,
 ): Promise<ProductFilters> {
-  const productsMetadata = await productService.getProductMetadata();
-  // construct system prompt and call groq api
-  const systemPrompt = `You need to generate JSON object for product filters on the basis of 
-  user's query that we will pass as input. The returned response will be a JSON object with below shape
-  {keyword?: string;
-  category?: string;
-  brand?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minDiscount?: number;
-  minRating?: number;
-  availabilityStatus?: string;
-  sortBy?: "price_asc" | "price_desc" | "rating_desc" | "discount_desc"}. Here ? indicates that these fields
-  are optional. Your job is to return JSON object that contains only the fields that value you can extract from user's query.
-  Your response should be ready to be used by JSON.parse and should not throw any error.
-  
-  A category can have any value in ${productsMetadata.categories} array
-  A brand can have any value in ${productsMetadata.brands} array
-  An availabilityStatus can have any value in ${productsMetadata.availabilityStatuses} array`;
+  if (!userQuery?.trim()) return {};
 
-  const llmResponse = await groq.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userQuery,
-      },
-    ],
-    model: "openai/gpt-oss-20b",
-  });
-
-  const llmOutput = llmResponse.choices[0]?.message?.content || "";
   try {
-    let productFilters = {};
-    if (llmOutput !== "") {
-      productFilters = JSON.parse(
-        llmOutput.substring(
-          llmOutput.indexOf("{"),
-          llmOutput.lastIndexOf("}") + 1,
-        ),
-      );
-    }
+    const metadata = await getProductMetadata();
 
-    return productFilters;
+    const response = await groq.chat.completions.create({
+      model: "openai/gpt-oss-20b",
+      temperature: 0, // deterministic output — to get consistent JSON & ignoring creativity
+      messages: [
+        { role: "system", content: buildSystemPrompt(metadata) },
+        { role: "user", content: userQuery },
+      ],
+    });
+
+    const rawOutput = response.choices[0]?.message?.content ?? "";
+    if (!rawOutput) return {};
+
+    const jsonString = extractJson(rawOutput);
+    return JSON.parse(jsonString) as ProductFilters;
   } catch (err) {
-    console.error(err);
+    // Fallback to empty filters — search still works, just without LLM extraction
+    console.error("LLM filter extraction failed:", err);
     return {};
   }
 }
