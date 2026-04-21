@@ -1,17 +1,14 @@
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "../src/lib/prisma.js";
 
-function createProductSlug(title: string): string {
-  const productSlug = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
-  return productSlug;
+interface DummyJsonReview {
+  rating: number;
+  comment: string;
+  date: string;
+  reviewerName: string;
+  reviewerEmail: string;
 }
 
-interface DummyJSONProduct {
+interface DummyJsonProduct {
   id: number;
   title: string;
   description: string;
@@ -24,53 +21,51 @@ interface DummyJSONProduct {
   brand?: string;
   sku: string;
   weight: number;
-  dimensions: Dimension;
+  dimensions: { width: number; height: number; depth: number };
   warrantyInformation: string;
   shippingInformation: string;
   availabilityStatus: string;
-  reviews: Review[];
+  reviews: DummyJsonReview[];
   returnPolicy: string;
   minimumOrderQuantity: number;
-  meta: Meta;
+  meta: {
+    createdAt: string;
+    updatedAt: string;
+    barcode: string;
+    qrCode: string;
+  };
   thumbnail: string;
   images: string[];
 }
 
-interface Dimension {
-  width: number;
-  height: number;
-  depth: number;
+function createSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
 
-interface Meta {
-  createdAt: string;
-  updatedAt: string;
-  barcode: string;
-  qrCode: string;
-}
-
-interface Review {
-  rating: number;
-  comment: string;
-  date: string;
-  reviewerName: string;
-  reviewerEmail: string;
-}
-
-async function addProductsToDB() {
+async function seed() {
   try {
-    const response = await fetch(`https://dummyjson.com/products?limit=0`);
-    const jsonResponse = await response.json();
-    const products = jsonResponse["products"] as DummyJSONProduct[];
+    console.log("Starting seed...");
 
-    // loop over products and save to db
+    const response = await fetch("https://dummyjson.com/products?limit=0");
+    if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+
+    const { products } = (await response.json()) as {
+      products: DummyJsonProduct[];
+    };
+    console.log(`Fetched ${products.length} products`);
+
     for (const product of products) {
       await prisma.product.upsert({
         where: { id: product.id },
         update: {},
         create: {
           id: product.id,
-          productSlug: createProductSlug(product.title),
+          productSlug: createSlug(product.title),
           title: product.title,
           description: product.description,
           category: product.category,
@@ -82,35 +77,35 @@ async function addProductsToDB() {
           brand: product.brand,
           sku: product.sku,
           weight: product.weight,
-          dimensions: {
-            width: product.dimensions.width,
-            height: product.dimensions.height,
-            depth: product.dimensions.depth,
-          },
+          dimensions: product.dimensions,
           warrantyInformation: product.warrantyInformation,
           shippingInformation: product.shippingInformation,
           availabilityStatus: product.availabilityStatus,
-          reviews: {
-            create: product.reviews,
-          },
           returnPolicy: product.returnPolicy,
           minimumOrderQuantity: product.minimumOrderQuantity,
-          meta: {
-            createdAt: product.meta.createdAt,
-            updatedAt: product.meta.updatedAt,
-            barcode: product.meta.barcode,
-            qrcode: product.meta.qrCode,
-          },
+          meta: product.meta,
           thumbnail: product.thumbnail,
           images: product.images,
+          reviews: {
+            create: product.reviews.map((r) => ({
+              rating: r.rating,
+              comment: r.comment,
+              date: new Date(r.date),
+              reviewerName: r.reviewerName,
+              reviewerEmail: r.reviewerEmail,
+            })),
+          },
         },
       });
     }
+
+    console.log("Seed complete");
   } catch (err) {
-    console.error("Error: ", err);
+    console.error("Seed failed:", err);
+    process.exit(1);
   } finally {
-    prisma.$disconnect();
+    await prisma.$disconnect();
   }
 }
 
-addProductsToDB();
+seed();
