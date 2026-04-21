@@ -58,3 +58,46 @@ export async function searchProducts(filters: ProductFilters) {
 
   return products;
 }
+
+export async function getProductMetadata() {
+  const [categoriesResponse, brandsResponse, availabilityStatusesResponse] =
+    await Promise.allSettled([
+      prisma.product.findMany({
+        distinct: ["category"],
+        select: { category: true },
+      }),
+      prisma.product.findMany({
+        distinct: ["brand"],
+        select: { brand: true },
+      }),
+      prisma.product.findMany({
+        distinct: ["availabilityStatus"],
+        select: { availabilityStatus: true },
+      }),
+    ]);
+
+  const categories =
+    categoriesResponse.status === "fulfilled"
+      ? categoriesResponse.value.map(({ category }) => category)
+      : [];
+
+  const brands =
+    brandsResponse.status === "fulfilled"
+      ? brandsResponse.value
+          .map(({ brand }) => brand)
+          .filter((brand) => brand !== null)
+      : [];
+
+  const availabilityStatuses =
+    availabilityStatusesResponse.status === "fulfilled"
+      ? availabilityStatusesResponse.value.map(
+          ({ availabilityStatus }) => availabilityStatus,
+        )
+      : [];
+
+  return {
+    categories,
+    brands,
+    availabilityStatuses,
+  };
+}
