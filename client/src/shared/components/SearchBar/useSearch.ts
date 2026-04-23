@@ -10,6 +10,7 @@ import { debounce } from "../../utils/debounce";
 interface SearchState {
   products: ProductAPIResponse[];
   filters: ProductFiltersAPIResponse;
+  llmFailed: boolean;
   loading: boolean;
   error: string | null;
 }
@@ -17,6 +18,7 @@ interface SearchState {
 const INITIAL_STATE = {
   products: [],
   filters: {},
+  llmFailed: false,
   loading: false,
   error: null,
 };
@@ -41,6 +43,7 @@ function useSearch(query: string): SearchState {
       setState({
         products: data.products,
         filters: data.filters,
+        llmFailed: data.llmFailed,
         loading: false,
         error: null,
       });
@@ -65,7 +68,10 @@ function useSearch(query: string): SearchState {
 
     debouncedFetch(query);
 
-    return () => controllerRef.current?.abort();
+    return () => {
+      controllerRef.current?.abort();
+      debouncedFetch.cancel();
+    }
   }, [query, debouncedFetch]);
 
   return state;
