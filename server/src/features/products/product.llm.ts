@@ -28,7 +28,7 @@ function buildSystemPrompt(metadata: {
 
   JSON shape:
   {
-    "keyword": string,           // main product type e.g. "laptop", "dress"
+    "keyword": string,           // main product user is searching (must be part of user query) for e.g. "laptop", "dress", "phone", etc
     "category": string,          // must be one of: ${JSON.stringify(metadata.categories)}
     "brand": string,             // must be one of: ${JSON.stringify(metadata.brands)}
     "minPrice": number,          // minimum price in USD
@@ -40,15 +40,15 @@ function buildSystemPrompt(metadata: {
   }
 
   Examples:
-  User: "cheap apple laptops" → {"keyword":"laptop","brand":"Apple","sortBy":"price_asc"}
+  User: "cheap apple laptops" → {"keyword":"laptop","category":"laptops","brand":"Apple","sortBy":"price_asc"}
   User: "highly rated beauty under 50" → {"keyword":"beauty","category":"beauty","maxPrice":50,"sortBy":"rating_desc"}
   User: "in stock samsung phones" → {"keyword":"phone","brand":"Samsung","availabilityStatus":"In Stock"}`;
 }
 
 export async function extractFiltersFromQuery(
   userQuery: string,
-): Promise<ProductFilters> {
-  if (!userQuery?.trim()) return {};
+): Promise<{ filters: ProductFilters; llmFailed: boolean }> {
+  if (!userQuery?.trim()) return { filters: {}, llmFailed: false };
 
   try {
     const metadata = await getProductMetadata();
@@ -63,13 +63,16 @@ export async function extractFiltersFromQuery(
     });
 
     const rawOutput = response.choices[0]?.message?.content ?? "";
-    if (!rawOutput) return {};
+    if (!rawOutput) return { filters: {}, llmFailed: false };
 
     const jsonString = extractJson(rawOutput);
-    return JSON.parse(jsonString) as ProductFilters;
+    return {
+      filters: JSON.parse(jsonString) as ProductFilters,
+      llmFailed: false,
+    };
   } catch (err) {
     // Fallback to empty filters — search still works, just without LLM extraction
     console.error("LLM filter extraction failed:", err);
-    return {};
+    return { filters: { keyword: userQuery }, llmFailed: true };
   }
 }

@@ -65,9 +65,9 @@ export async function llmSearchHandler(req: Request, res: Response) {
   }
 
   try {
-    const filters: ProductFilters = await extractFiltersFromQuery(userQuery);
+    const { filters, llmFailed } = await extractFiltersFromQuery(userQuery);
     const products = await productService.searchProducts(filters);
-    res.json({ products, filters }); // return filters so frontend can show "Searching for..."
+    res.json({ products, filters, llmFailed }); // return filters so frontend can show "Searching for..."
   } catch (err) {
     console.error("LLM search failed:", err);
     res.status(500).json({ message: "Search failed. Please try again." });
