@@ -13,6 +13,7 @@ interface SearchState {
   llmFailed: boolean;
   loading: boolean;
   error: string | null;
+  hasSearched: boolean;
 }
 
 const INITIAL_STATE = {
@@ -21,6 +22,7 @@ const INITIAL_STATE = {
   llmFailed: false,
   loading: false,
   error: null,
+  hasSearched: false,
 };
 
 function useSearch(query: string): SearchState {
@@ -46,6 +48,7 @@ function useSearch(query: string): SearchState {
         llmFailed: data.llmFailed,
         loading: false,
         error: null,
+        hasSearched: true,
       });
     } catch (err) {
       if (axios.isCancel(err)) return;
@@ -54,6 +57,7 @@ function useSearch(query: string): SearchState {
         ...prev,
         loading: false,
         error: err instanceof Error ? err.message : "Search failed",
+        hasSearched: true,
       }));
     }
   }, []);
@@ -71,7 +75,7 @@ function useSearch(query: string): SearchState {
     return () => {
       controllerRef.current?.abort();
       debouncedFetch.cancel();
-    }
+    };
   }, [query, debouncedFetch]);
 
   return state;
