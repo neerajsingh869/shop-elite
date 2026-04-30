@@ -45,9 +45,28 @@ export async function searchProductsHandler(req: Request, res: Response) {
     sortBy: getSortBy(q.sortBy),
   };
 
+  let pagination;
+  if (q.limit || q.page) {
+    const limit = getNumber(q.limit);
+    const page = getNumber(q.page);
+    pagination = { page: page ?? 1, limit: limit ?? 12 };
+  }
+
   try {
-    const products = await productService.searchProducts(filters);
-    res.json({ products });
+    const { products, total } = await productService.searchProducts(
+      filters,
+      pagination,
+    );
+
+    res.json({
+      products,
+      total,
+      ...(pagination && {
+        limit: pagination.limit,
+        page: pagination.page,
+        totalPages: Math.ceil(total / pagination.limit),
+      }),
+    });
   } catch (err) {
     console.error("Search failed:", err);
     res.status(500).json({ message: "Search failed. Please try again." });
@@ -66,7 +85,7 @@ export async function llmSearchHandler(req: Request, res: Response) {
 
   try {
     const { filters, llmFailed } = await extractFiltersFromQuery(userQuery);
-    const products = await productService.searchProducts(filters);
+    const { products } = await productService.searchProducts(filters);
     res.json({ products, filters, llmFailed }); // return filters so frontend can show "Searching for..."
   } catch (err) {
     console.error("LLM search failed:", err);
