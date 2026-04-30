@@ -99,7 +99,7 @@ export async function getProductDetailsHandler(req: Request, res: Response) {
       res.status(404).json({ message: "Product not found" });
       return;
     }
-    res.json({ productDetails });
+    res.json({ ...productDetails });
   } catch (err) {
     res
       .status(500)
