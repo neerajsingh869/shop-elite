@@ -31,6 +31,13 @@ function buildOrderBy(
   }
 }
 
+function formatCategoryName(slug: string) {
+  return slug
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.substring(1))
+    .join(" ");
+}
+
 export async function searchProducts(filters: ProductFilters) {
   const where: ProductWhereInput = {
     ...(filters.keyword && {
@@ -106,4 +113,24 @@ export async function getProductMetadata() {
   };
 
   return metadataCache;
+}
+
+export async function getProductDetailsByID(id: number) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { reviews: true },
+  });
+
+  return product;
+}
+
+export async function getAllCategories() {
+  const { categories } = await getProductMetadata();
+
+  const transformedCategories = categories.map((slug: string) => ({
+    slug,
+    name: formatCategoryName(slug),
+  }));
+
+  return transformedCategories;
 }

@@ -73,3 +73,36 @@ export async function llmSearchHandler(req: Request, res: Response) {
     res.status(500).json({ message: "Search failed. Please try again." });
   }
 }
+
+export async function getAllCategoriesHandler(req: Request, res: Response) {
+  try {
+    const categories = await productService.getAllCategories();
+    res.json(categories);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Facing problem in fetching products categories" });
+  }
+}
+
+export async function getProductDetailsHandler(req: Request, res: Response) {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    res.status(400).json({ message: "Invalid product ID" });
+    return;
+  }
+
+  try {
+    const productDetails = await productService.getProductDetailsByID(id);
+    if (!productDetails) {
+      res.status(404).json({ message: "Product not found" });
+      return;
+    }
+    res.json({ productDetails });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Facing problem in fetching product details" });
+  }
+}
