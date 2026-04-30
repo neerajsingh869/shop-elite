@@ -38,7 +38,10 @@ function formatCategoryName(slug: string) {
     .join(" ");
 }
 
-export async function searchProducts(filters: ProductFilters) {
+export async function searchProducts(
+  filters: ProductFilters,
+  pagination?: { page: number; limit: number },
+) {
   const where: ProductWhereInput = {
     ...(filters.keyword && {
       title: { contains: filters.keyword, mode: "insensitive" },
@@ -66,11 +69,19 @@ export async function searchProducts(filters: ProductFilters) {
     }),
   };
 
-  return prisma.product.findMany({
-    where,
-    orderBy: buildOrderBy(filters.sortBy),
-    // TODO: add pagination (skip/take) in next iteration
-  });
+  const [total, products] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      orderBy: buildOrderBy(filters.sortBy),
+      ...(pagination && {
+        skip: (pagination.page - 1) * pagination.limit,
+        take: pagination.limit,
+      }),
+    }),
+  ]);
+
+  return { products, total };
 }
 
 export async function getProductMetadata() {
