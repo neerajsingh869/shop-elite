@@ -1,17 +1,12 @@
 import createProductSlug from "../utils/createProductSlug";
 
-export const BASE_URL = "https://dummyjson.com";
-export const GET_CATEGORIES_URL = `${BASE_URL}/products/categories`;
-export const GET_PRODUCTS_BY_CATEGORY_URL = (categorySlug: string) =>
-  `${BASE_URL}/products/category/${categorySlug}`;
-export const GET_PRODUCT_URL = (productId: number) =>
-  `${BASE_URL}/products/${productId}`;
+export const BASE_URL = import.meta.env.VITE_API_URL;
 
-export const getSearchUrlForProducts = (
-  searchText: string,
-  limit = 0,
-  skip = 0,
-) => `${BASE_URL}/products/search?q=${searchText}&limit=${limit}&skip=${skip}`;
+export const GET_CATEGORIES_URL = `${BASE_URL}/api/products/categories`;
+export const GET_PRODUCTS_BY_CATEGORY_URL = (categorySlug: string) =>
+  `${BASE_URL}/api/products/search?category=${categorySlug}`;
+export const GET_PRODUCT_URL = (productId: number) =>
+  `${BASE_URL}/api/products/${productId}`;
 
 export const ROUTES = {
   home: "/",
