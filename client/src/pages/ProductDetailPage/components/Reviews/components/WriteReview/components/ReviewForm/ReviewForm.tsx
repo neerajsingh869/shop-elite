@@ -39,6 +39,7 @@ function ReviewForm({ addReview }: ReviewFormProps) {
     }
 
     const newReview: Review = {
+      id: Date.now(),
       rating: reviewStarsSelected,
       comment: reviewDescription.trim(),
       date: new Date().toISOString(),
@@ -65,6 +66,7 @@ function ReviewForm({ addReview }: ReviewFormProps) {
               if (num <= Math.max(reviewStarsActive, reviewStarsSelected)) {
                 return (
                   <StarSelf
+                    key={num}
                     size={6}
                     filled={true}
                     onMouseEnter={() => setReviewStarsActive(num)}
@@ -75,6 +77,7 @@ function ReviewForm({ addReview }: ReviewFormProps) {
               }
               return (
                 <StarSelf
+                  key={num}
                   size={6}
                   filled={false}
                   onMouseEnter={() => setReviewStarsActive(num)}
