@@ -25,9 +25,9 @@ function AboutProduct({ data }: AboutProductProps) {
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((num) => {
             if (num <= Math.round(data.rating)) {
-              return <StarSelf size={3} filled={true} />;
+              return <StarSelf key={num} size={3} filled={true} />;
             }
-            return <StarSelf size={3} filled={false} />;
+            return <StarSelf key={num} size={3} filled={false} />;
           })}
         </div>
         <span className="text-zinc-100 text-sm font-bold">{data.rating}</span>
@@ -54,7 +54,7 @@ function AboutProduct({ data }: AboutProductProps) {
       <ProductMetadata data={data} />
       {/* Action buttons */}
       <div className="flex gap-2 self-stretch">
-        <button className="bg-yellow-500 text-black font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400">
+        <button className="bg-yellow-500 text-black font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400 cursor-pointer">
           Add to Cart
         </button>
         <button className="px-4 py-4 border rounded-xl border-zinc-800 hover:border-zinc-600 transition duration-300 hover:-translate-y-0.5">

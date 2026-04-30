@@ -21,26 +21,18 @@ function ReviewCard({ reviewInfo }: ReviewCardProps) {
         </div>
         <div className="flex flex-col gap-1">
           <span>{reviewInfo.reviewerName}</span>
-          <span className="text-xs text-zinc-500">{reviewInfo.reviewerEmail}</span>
+          <span className="text-xs text-zinc-500">
+            {reviewInfo.reviewerEmail}
+          </span>
         </div>
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((num) => {
             if (num <= Math.round(reviewInfo.rating)) {
-              return (
-                <StarSelf
-                  size={3}
-                  filled={true}
-                />
-              );
+              return <StarSelf key={num} size={3} filled={true} />;
             }
-            return (
-              <StarSelf
-                size={3}
-                filled={false}
-              />
-            );
+            return <StarSelf key={num} size={3} filled={false} />;
           })}
         </div>
         <p className="text-zinc-400 text-sm mb-6">{reviewInfo.comment}</p>
