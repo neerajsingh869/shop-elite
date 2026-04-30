@@ -23,6 +23,16 @@ function SearchBar() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isOpen]);
+
   return (
     <>
       {isOpen && <SearchBarModal setIsOpen={setIsOpen} />}
