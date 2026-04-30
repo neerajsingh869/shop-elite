@@ -1,10 +1,10 @@
 export interface Category {
   slug: string;
   name: string;
-  url: string;
 }
 
 export interface Review {
+  id: number;
   rating: number;
   comment: string;
   date: string;
@@ -37,7 +37,7 @@ export interface ProductDetail extends Product {
 
 export interface ProductResponse {
   products: Product[];
-  total: number;
-  skip: number;
-  limit: number;
+  // total: number; TODO
+  // skip: number; TODO
+  // limit: number; TODO
 }
