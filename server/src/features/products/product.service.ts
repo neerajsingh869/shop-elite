@@ -145,3 +145,28 @@ export async function getAllCategories() {
 
   return transformedCategories;
 }
+
+export async function getCategoryMetadata(category: string) {
+  const result = await prisma.product.findMany({
+    where: {
+      category: { equals: category, mode: "insensitive" },
+    },
+    select: { brand: true, price: true },
+  });
+
+  let brands = new Set<string>();
+  let minPrice = Infinity;
+  let maxPrice = -Infinity;
+
+  for (const product of result) {
+    if (product.brand) {
+      brands.add(product.brand);
+    }
+
+    const price = Number(product.price);
+    minPrice = Math.min(price, minPrice);
+    maxPrice = Math.max(price, maxPrice);
+  }
+
+  return { brands: Array.from(brands), minPrice, maxPrice };
+}

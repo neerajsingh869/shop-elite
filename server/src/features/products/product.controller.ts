@@ -125,3 +125,23 @@ export async function getProductDetailsHandler(req: Request, res: Response) {
       .json({ message: "Facing problem in fetching product details" });
   }
 }
+
+export async function getCategoryMetadataHandler(req: Request, res: Response) {
+  const q = req.query;
+  const category = getString(q.category);
+
+  if (!category) {
+    res.status(400).json({ message: "Category is required" });
+    return;
+  }
+
+  try {
+    const categoryMetadata = await productService.getCategoryMetadata(category);
+    res.json(categoryMetadata);
+  } catch (err) {
+    console.error("Error in getting category metadata: ", err);
+    res
+      .status(500)
+      .json({ message: "Facing problem in fetching category metadata" });
+  }
+}
