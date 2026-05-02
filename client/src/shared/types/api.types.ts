@@ -16,8 +16,8 @@ export interface Product {
   id: number;
   title: string;
   category: string;
-  price: number;
-  discountPercentage: number;
+  price: string; // Decimal in prisma
+  discountPercentage: string; // Decimal in prisma
   rating: number;
   stock: number;
   brand?: string;
@@ -37,7 +37,14 @@ export interface ProductDetail extends Product {
 
 export interface ProductResponse {
   products: Product[];
-  // total: number; TODO
-  // skip: number; TODO
-  // limit: number; TODO
+  total: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+}
+
+export interface CategoryMetadataResponse {
+  brands: string[];
+  minPrice: number;
+  maxPrice: number;
 }
