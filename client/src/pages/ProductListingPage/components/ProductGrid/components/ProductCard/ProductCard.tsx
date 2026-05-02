@@ -19,9 +19,9 @@ function ProductCard({ product, categorySlug }: ProductCardProps) {
             alt={product.title}
             loading="lazy"
           />
-          {product.discountPercentage > 10 && (
+          {Number(product.discountPercentage) > 10 && (
             <span className="absolute top-2 left-2 text-xs font-bold text-black bg-yellow-500 rounded py-0.5 px-2">
-              -{Math.round(product.discountPercentage)}%
+              -{Math.round(Number(product.discountPercentage))}%
             </span>
           )}
         </div>
@@ -29,7 +29,7 @@ function ProductCard({ product, categorySlug }: ProductCardProps) {
           <p className="text-xs mb-2 line-clamp-2">{product.title}</p>
           <div className="flex justify-between items-end">
             <span className="text-sm font-bold text-yellow-400">
-              ${product.price}
+              ${Number(product.price).toFixed(2)}
             </span>
             <span className="text-xs text-zinc-500 flex items-center gap-1">
               <Star
