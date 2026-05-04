@@ -50,7 +50,9 @@ export async function searchProducts(
       category: { equals: filters.category, mode: "insensitive" },
     }),
     ...(filters.brand && {
-      brand: { equals: filters.brand, mode: "insensitive" },
+      brand: Array.isArray(filters.brand)
+        ? { in: filters.brand }
+        : { equals: filters.brand, mode: "insensitive" },
     }),
     ...(filters.availabilityStatus && {
       availabilityStatus: filters.availabilityStatus,

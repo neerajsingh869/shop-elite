@@ -1,7 +1,7 @@
 export interface ProductFilters {
   keyword?: string;
   category?: string;
-  brand?: string;
+  brand?: string | string[];
   minPrice?: number;
   maxPrice?: number;
   minDiscount?: number;

@@ -36,7 +36,11 @@ export async function searchProductsHandler(req: Request, res: Response) {
   const filters: ProductFilters = {
     keyword: getString(q.keyword),
     category: getString(q.category),
-    brand: getString(q.brand),
+    brand: q.brand
+      ? Array.isArray(q.brand)
+        ? (q.brand as string[])
+        : (q.brand as string)
+      : undefined,
     availabilityStatus: getString(q.availabilityStatus),
     minPrice: getNumber(q.minPrice),
     maxPrice: getNumber(q.maxPrice),
