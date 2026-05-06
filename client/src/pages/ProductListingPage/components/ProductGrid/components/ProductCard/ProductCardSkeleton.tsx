@@ -1,6 +1,6 @@
 function ProductCardSkeleton() {
   return (
-    <article className="bg-zinc-950 border-zinc-800 border rounded-xl h-60">
+    <article className="bg-zinc-950 border-zinc-800 border rounded-xl h-60 lg:w-56">
       <div className="bg-neutral-900 rounded-t-xl w-full h-3/4 animate-pulse aspect-square"></div>
       <div className="p-3 h-1/4 flex flex-col justify-between">
         <p className="mb-2 h-3 animate-pulse bg-neutral-900"></p>

@@ -1,4 +1,5 @@
-import type { Filters } from "../../ProductListing";
+import type { SetURLSearchParams } from "react-router";
+
 import AvailabilityFilter from "./components/AvailabilityFilter/AvailabilityFilter";
 import BrandFilter from "./components/BrandFilter/BrandFilter";
 import DiscountFilter from "./components/DiscountFilter/DiscountFilter";
@@ -9,34 +10,46 @@ interface ProductFiltersProps {
   brands: string[];
   minPrice: number;
   maxPrice: number;
-  filters: Filters;
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
+  searchParams: URLSearchParams;
+  setSearchParams: SetURLSearchParams;
 }
 
 function ProductFilters({
   brands,
   minPrice,
   maxPrice,
-  filters,
-  setFilters,
+  searchParams,
+  setSearchParams,
 }: ProductFiltersProps) {
-  console.log(minPrice, maxPrice);
   return (
-    <div className="w-52 shrink-0 sticky flex flex-col gap-4">
+    <div className="w-52 shrink-0 sticky flex flex-col gap-4 top-4">
       <PriceFilter
         minPrice={minPrice}
         maxPrice={maxPrice}
-        filters={filters}
-        setFilters={setFilters}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
       />
       <hr className="text-zinc-800" />
-      <DiscountFilter filters={filters} setFilters={setFilters} />
+      <DiscountFilter
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
       <hr className="text-zinc-800" />
-      <RatingsFilter filters={filters} setFilters={setFilters} />
+      <RatingsFilter
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
       <hr className="text-zinc-800" />
-      <BrandFilter brands={brands} filters={filters} setFilters={setFilters} />
+      <BrandFilter
+        brands={brands}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
       <hr className="text-zinc-800" />
-      <AvailabilityFilter filters={filters} setFilters={setFilters} />
+      <AvailabilityFilter
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
     </div>
   );
 }

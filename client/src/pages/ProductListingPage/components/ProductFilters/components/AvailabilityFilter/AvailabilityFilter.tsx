@@ -1,22 +1,30 @@
-import type { Filters } from "../../../../ProductListing";
+import type { SetURLSearchParams } from "react-router";
+
 import FilterTitle from "../FilterTitle/FilterTitle";
 import ResetButton from "../ResetButton/ResetButton";
 
 interface AvailabilityFilterProps {
-  filters: Filters;
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
+  searchParams: URLSearchParams;
+  setSearchParams: SetURLSearchParams;
 }
 
-function AvailabilityFilter({ filters, setFilters }: AvailabilityFilterProps) {
+function AvailabilityFilter({
+  searchParams,
+  setSearchParams,
+}: AvailabilityFilterProps) {
   return (
     <section>
       <header className="flex justify-between items-center mb-3">
         <FilterTitle title="Availability" />
         <ResetButton
           resetFilter={() =>
-            setFilters({
-              ...filters,
-              inStockOnly: false,
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.delete("availabilityStatus");
+              if (next.has("page")) {
+                next.set("page", "1");
+              }
+              return next;
             })
           }
         />
@@ -25,12 +33,16 @@ function AvailabilityFilter({ filters, setFilters }: AvailabilityFilterProps) {
         <input
           id="in-stock-only-check"
           type="checkbox"
-          checked={filters.inStockOnly}
+          checked={searchParams.get("availabilityStatus") === "In Stock"}
           onChange={() => {
-            console.log(filters);
-            setFilters({
-              ...filters,
-              inStockOnly: !filters.inStockOnly,
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              if (prev.has("availabilityStatus")) {
+                next.delete("availabilityStatus");
+              } else {
+                next.set("availabilityStatus", "In Stock");
+              }
+              return next;
             });
           }}
           className="accent-yellow-500 cursor-pointer w-3.5 h-3.5"
@@ -39,7 +51,7 @@ function AvailabilityFilter({ filters, setFilters }: AvailabilityFilterProps) {
           htmlFor="in-stock-only-check"
           className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors cursor-pointer"
         >
-          In stock only
+          In Stock only
         </label>
       </div>
     </section>

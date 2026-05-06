@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 
-import type { Product, ProductResponse } from "../../shared/types/api.types";
+import type {
+  CategoryMetadataResponse,
+  ProductResponse,
+} from "../../shared/types/api.types";
 
 import CategoryNotFound from "./CategoryNotFound";
 import useFetch from "../../shared/hooks/useFetch";
@@ -11,113 +13,85 @@ import useScrollToTop from "../../shared/hooks/useScrollToTop";
 import ProductGrid from "./components/ProductGrid/ProductGrid";
 import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
-import { GET_PRODUCTS_BY_CATEGORY_URL, ROUTES } from "../../shared/constants";
-import ProductFilters from "./components/ProductFilters/ProductFilters";
+import {
+  buildCategoryMetadataURL,
+  buildSearchURL,
+  ROUTES,
+} from "../../shared/constants";
+import type { ProductFilters } from "../../features/products/product.types";
+import ProductFiltersComponent from "./components/ProductFilters/ProductFilters";
+import ProductListingGridSkeleton from "./components/ProductGrid/ProductGridSkeleton";
 
-interface Range {
-  min: number;
-  max: number;
+const VALID_SORT_VALUES = [
+  "price_asc",
+  "price_desc",
+  "rating_desc",
+  "discount_desc",
+] as const;
+
+function getString(val: unknown): string | undefined {
+  return typeof val === "string" ? val : undefined;
 }
 
-export interface Filters {
-  priceRange: Range;
-  minRating: number; // 0 = no filter
-  minDiscount: number; // 0 = no filter
-  brands: string[]; // [] = all brands shown
-  inStockOnly: boolean; // false = no filter
+function getNumber(val: unknown): number | undefined {
+  const num = Number(val);
+  return isNaN(num) ? undefined : num;
 }
 
-function getDefaultFilters(products: Product[]): Filters {
-  let minPrice = Infinity;
-  let maxPrice = -Infinity;
+function getSortBy(val: unknown): ProductFilters["sortBy"] {
+  const str = getString(val);
+  if (!str) return undefined;
 
-  for (const product of products) {
-    minPrice = Math.min(minPrice, product.price);
-    maxPrice = Math.max(maxPrice, product.price);
-  }
-
-  return {
-    priceRange: { min: minPrice, max: maxPrice },
-    minRating: 0,
-    minDiscount: 0,
-    brands: [],
-    inStockOnly: false,
-  };
-}
-
-function applyFilters(filters: Filters, products: Product[]): Product[] {
-  const filteredProducts: Product[] = [];
-
-  for (const product of products) {
-    if (
-      product.price < filters.priceRange.min ||
-      product.price > filters.priceRange.max
-    ) {
-      continue;
-    }
-    if (filters.minRating > 0 && product.rating < filters.minRating) continue;
-    if (
-      filters.minDiscount > 0 &&
-      product.discountPercentage < filters.minDiscount
-    )
-      continue;
-    if (
-      filters.brands.length > 0 &&
-      !filters.brands.includes(product.brand ?? "")
-    )
-      continue;
-
-    if (filters.inStockOnly && product.stock <= 0) continue;
-
-    filteredProducts.push(product);
-  }
-
-  return filteredProducts;
+  return VALID_SORT_VALUES.includes(str as never)
+    ? (str as ProductFilters["sortBy"])
+    : undefined;
 }
 
 function ProductListingPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const { data, error, loading } = useFetch<ProductResponse>(
-    GET_PRODUCTS_BY_CATEGORY_URL(categorySlug!),
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters: ProductFilters = {
+    keyword: getString(searchParams.get("keyword")),
+    category: categorySlug,
+    brand:
+      searchParams.getAll("brand").length > 0
+        ? searchParams.getAll("brand")
+        : undefined,
+    minPrice: getNumber(searchParams.get("minPrice")),
+    maxPrice: getNumber(searchParams.get("maxPrice")),
+    minDiscount: getNumber(searchParams.get("minDiscount")),
+    minRating: getNumber(searchParams.get("minRating")),
+    availabilityStatus: getString(searchParams.get("availabilityStatus")),
+    sortBy: getSortBy(searchParams.get("sortBy")),
+  };
+  const productResponse = useFetch<ProductResponse>(
+    buildSearchURL(filters, Number(searchParams.get("page") ?? 1)),
   );
-  const [filters, setFilters] = useState<Filters | null>(
-    data?.products ? getDefaultFilters(data.products) : null,
+  // Fetch category metadata to build dynamic filter
+  const categoryMetadata = useFetch<CategoryMetadataResponse>(
+    buildCategoryMetadataURL(categorySlug!),
   );
 
-  useEffect(() => {
-    if (data?.products) {
-      setFilters(getDefaultFilters(data.products));
-    }
-  }, [data]);
-
-  const filteredProducts =
-    filters && data?.products
-      ? applyFilters(filters, data.products)
-      : (data?.products ?? []);
-
-  const { topRef } = useScrollToTop(loading);
+  const { topRef } = useScrollToTop(productResponse.loading);
 
   const categoryName = getCategoryName(categorySlug);
 
-  if (loading) {
+  if (categoryMetadata.loading) {
     return <ProductListingSkeleton />;
   }
 
-  if (error) {
+  if (categoryMetadata.error) {
     return (
       <ProductListingError
-        message={error}
+        message={categoryMetadata.error}
         onRetry={() => window.location.reload()}
       />
     );
   }
 
-  if (!data || data.products.length <= 0) {
+  if (!categoryMetadata || !categoryMetadata.data) {
     return <CategoryNotFound categoryName={categoryName} />;
-  }
-
-  if (!filters) {
-    return <ProductListingSkeleton />;
   }
 
   return (
@@ -133,31 +107,66 @@ function ProductListingPage() {
             {categoryName}
           </h1>
           <div className="text-xs text-zinc-400 border border-zinc-800 rounded-full p-1 px-3">
-            {filteredProducts.length ?? 0} products
+            {productResponse?.data?.total ?? 0} products
           </div>
         </div>
       </header>
       <div className="flex gap-8 lg:gap-16 items-start">
-        <ProductFilters
-          brands={[
-            ...new Set(
-              data.products
-                .map((product) => product.brand)
-                .filter((brand) => Boolean(brand)),
-            ),
-          ]}
-          minPrice={data.products.reduce(
-            (acc, curr) => Math.min(acc, curr.price),
-            Infinity,
-          )}
-          maxPrice={data.products.reduce(
-            (acc, curr) => Math.max(acc, curr.price),
-            -Infinity,
-          )}
-          filters={filters}
-          setFilters={setFilters}
+        <ProductFiltersComponent
+          brands={categoryMetadata.data?.brands ?? []}
+          minPrice={categoryMetadata.data?.minPrice || 0}
+          maxPrice={categoryMetadata.data?.maxPrice || 10000}
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
         />
-        <ProductGrid products={filteredProducts} categorySlug={categorySlug!} />
+        {productResponse.loading ? (
+          <ProductListingGridSkeleton />
+        ) : productResponse.data && productResponse.data.total ? (
+          <div>
+            <ProductGrid
+              products={productResponse.data.products}
+              categorySlug={categorySlug!}
+            />
+            <div className="flex justify-center gap-2 mt-3">
+              {productResponse.data.totalPages &&
+                productResponse.data.totalPages > 1 &&
+                Array.from({ length: productResponse.data.totalPages }).map(
+                  (_, index) => (
+                    <button
+                      key={index}
+                      className="cursor-pointer text-emerald-400 bg-emerald-900/20 border border-emerald-800/40 rounded text font-semibold px-2.5 py-0.5"
+                      onClick={() =>
+                        setSearchParams((prev) => {
+                          const next = new URLSearchParams(prev);
+                          next.set("page", String(index + 1));
+                          return next;
+                        })
+                      }
+                    >
+                      {index + 1}
+                    </button>
+                  ),
+                )}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-32 mx-auto">
+            <div className="flex flex-col items-center">
+              <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100 text-center">
+                No products found
+              </span>
+              <span className="text-zinc-500 text-sm lg:text-base text-center">
+                Use fewer filters or{" "}
+                <button
+                  onClick={() => setSearchParams({})}
+                  className="underline cursor-pointer"
+                >
+                  clear all
+                </button>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
