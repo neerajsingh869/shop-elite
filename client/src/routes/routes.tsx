@@ -2,6 +2,7 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
 import SuspenseFallback from "../shared/components/SuspenseFallback/SuspenseFallback";
+import AllProducts from "../pages/AllProductsPage/AllProducts";
 
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ProductDetailPage = lazy(
@@ -27,6 +28,7 @@ function AppRoutes() {
           path="/:categorySlug/:productId/:productSlug"
           element={<ProductDetailPage />}
         />
+        <Route path="/products" element={<AllProducts />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<NotFoundPage />} />

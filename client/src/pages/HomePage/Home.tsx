@@ -6,6 +6,7 @@ import type { Category } from "../../shared/types/api.types";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
 import CategoryGridSkeleton from "./components/CategoryGrid/CategoryGridSkeleton";
 import CategoryGrid from "./components/CategoryGrid/CategoryGrid";
+import { Link } from "react-router";
 
 function HomePage() {
   const { data, error, loading } = useFetch<Category[]>(GET_CATEGORIES_URL);
@@ -36,7 +37,19 @@ function HomePage() {
       ) : error ? (
         <div className="text-red-400 text-sm">Error: {error}</div>
       ) : (
-        data && <CategoryGrid data={data} />
+        data && (
+          <>
+            <CategoryGrid data={data} />
+            <div className="mt-6 flex justify-center">
+              <Link
+                to="/products"
+                className="cursor-pointer text-center font-bold text-zinc-500 text-xl underline"
+              >
+                Browse all products
+              </Link>
+            </div>
+          </>
+        )
       )}
     </>
   );
