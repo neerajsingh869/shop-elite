@@ -1,22 +1,27 @@
-import type { Filters } from "../../../../ProductListing";
+import type { SetURLSearchParams } from "react-router";
+
 import FilterTitle from "../FilterTitle/FilterTitle";
 import ResetButton from "../ResetButton/ResetButton";
 
 interface RatingsFilterProps {
-  filters: Filters;
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
+  searchParams: URLSearchParams;
+  setSearchParams: SetURLSearchParams;
 }
 
-function RatingsFilter({ filters, setFilters }: RatingsFilterProps) {
+function RatingsFilter({ searchParams, setSearchParams }: RatingsFilterProps) {
   return (
     <section>
       <header className="flex justify-between items-center mb-3">
         <FilterTitle title="Ratings" />
         <ResetButton
           resetFilter={() =>
-            setFilters({
-              ...filters,
-              minRating: 0,
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.delete("minRating");
+              if (next.has("page")) {
+                next.set("page", "1");
+              }
+              return next;
             })
           }
         />
@@ -26,13 +31,13 @@ function RatingsFilter({ filters, setFilters }: RatingsFilterProps) {
           <input
             id={`rating-${ratingValue}+`}
             type="radio"
-            checked={filters.minRating === ratingValue}
-            onChange={(e) => {
-              console.log(e.target.value);
-              setFilters((prev) => ({
-                ...prev,
-                minRating: ratingValue,
-              }));
+            checked={Number(searchParams.get("minRating")) === ratingValue}
+            onChange={() => {
+              setSearchParams((prev) => {
+                const next = new URLSearchParams(prev);
+                next.set("minRating", String(ratingValue));
+                return next;
+              });
             }}
             value={ratingValue}
             className="accent-yellow-500 cursor-pointer w-3.5 h-3.5"

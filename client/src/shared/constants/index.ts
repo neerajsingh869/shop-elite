@@ -4,11 +4,6 @@ import createProductSlug from "../utils/createProductSlug";
 export const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const GET_CATEGORIES_URL = `${BASE_URL}/api/products/categories`;
-// api to get paginated response of products for the specified category
-export const GET_PRODUCTS_BY_CATEGORY_URL = (
-  categorySlug: string,
-  page: number,
-) => `${BASE_URL}/api/products/search?category=${categorySlug}&page=${page}`;
 export const GET_PRODUCT_URL = (productId: number) =>
   `${BASE_URL}/api/products/${productId}`;
 
@@ -17,7 +12,13 @@ export const buildSearchURL = (filters: ProductFilters, page?: number) => {
 
   if (filters.keyword) params.set("keyword", filters.keyword);
   if (filters.category) params.set("category", filters.category);
-  if (filters.brand) params.set("brand", filters.brand);
+  if (filters.brand) {
+    const brands = Array.isArray(filters.brand)
+      ? filters.brand
+      : [filters.brand];
+    
+    brands.forEach((brand) => params.append("brand", brand));
+  }
   if (filters.minPrice) params.set("minPrice", String(filters.minPrice));
   if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
   if (filters.minDiscount)

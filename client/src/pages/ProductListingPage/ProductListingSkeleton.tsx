@@ -12,7 +12,12 @@ function ProductListingPageSkeleton() {
           <div className="border border-zinc-800 bg-zinc-800 h-4 w-16 rounded-full animate-pulse"></div>
         </div>
       </header>
-      <ProductListingGridSkeleton />
+      <div className="flex gap-8 lg:gap-16 items-start justify-between">
+        <div className="w-52 shrink-0 sticky flex flex-col gap-4 top-4 animate-pulse bg-neutral-900 min-h-screen"></div>
+        <div>
+          <ProductListingGridSkeleton />
+        </div>
+      </div>
     </>
   );
 }
