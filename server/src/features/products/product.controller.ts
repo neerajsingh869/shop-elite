@@ -149,3 +149,37 @@ export async function getCategoryMetadataHandler(req: Request, res: Response) {
       .json({ message: "Facing problem in fetching category metadata" });
   }
 }
+
+// GET /api/products?page=1&limit=24
+export async function getAllProductsHandler(req: Request, res: Response) {
+  const q = req.query;
+
+  let pagination;
+  if (q.limit || q.page) {
+    const limit = getNumber(q.limit);
+    const page = getNumber(q.page);
+    pagination = { page: page ?? 1, limit: limit ?? 12 };
+  }
+
+  try {
+    const { products, total } = await productService.searchProducts(
+      {},
+      pagination,
+    );
+
+    res.json({
+      products,
+      total,
+      ...(pagination && {
+        limit: pagination.limit,
+        page: pagination.page,
+        totalPages: Math.ceil(total / pagination.limit),
+      }),
+    });
+  } catch (err) {
+    console.error("Failure during fetching all products:", err);
+    res
+      .status(500)
+      .json({ message: "Facing problem in fetching all products" });
+  }
+}
