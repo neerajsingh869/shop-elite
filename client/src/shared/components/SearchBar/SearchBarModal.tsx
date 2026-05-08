@@ -172,7 +172,7 @@ function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
                         </p>
                         <div className="flex gap-3 flex-wrap items-end text-xs md:text-sm">
                           <span className=" text-yellow-400 font-bold ">
-                            ${product.price}
+                            ${Number(product.price).toFixed(2)}
                           </span>
                           <span className="text-zinc-500 line-through">
                             $
