@@ -126,6 +126,7 @@ function ProductListingPage() {
             <ProductGrid
               products={productResponse.data.products}
               categorySlug={categorySlug!}
+              source="PRODUCT_LISTING"
             />
             <div className="flex justify-center gap-2 mt-3">
               {productResponse.data.totalPages &&

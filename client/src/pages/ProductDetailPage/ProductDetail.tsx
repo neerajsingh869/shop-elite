@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { Link, useLocation, useParams } from "react-router";
 
 import type { ProductDetail } from "../../shared/types/api.types";
 
@@ -27,12 +27,13 @@ function ProductDetailPage() {
   const productId = Number(params.productId);
   const productSlug = params.productSlug;
 
+  const location = useLocation();
+  const source = location?.state?.source || "/";
+
   const { data, error, loading } = useFetch<ProductDetail>(
     GET_PRODUCT_URL(productId),
   );
   const { topRef } = useScrollToTop(loading);
-
-  const categoryName = getCategoryName(categorySlug);
 
   if (loading) {
     return <ProductDetailPageSkeleton />;
@@ -55,8 +56,20 @@ function ProductDetailPage() {
     <>
       <div className="absolute top-0" ref={topRef}></div>
       <BackButton
-        to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
-        label={`Back to ${categoryName}`}
+        to={
+          source === "ALL_PRODUCTS"
+            ? "/products"
+            : source === "PRODUCT_LISTING"
+              ? ROUTES.category(data.category)
+              : ROUTES.home
+        }
+        label={
+          source === "ALL_PRODUCTS"
+            ? "Back to All Products"
+            : source === "PRODUCT_LISTING"
+              ? `Back to ${getCategoryName(data.category)}`
+              : "Back to Home"
+        }
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image gallery */}
@@ -64,10 +77,10 @@ function ProductDetailPage() {
         <div className="flex flex-col gap-5 items-start">
           {/* Link to go to product listing page for the category */}
           <Link
-            to={categorySlug ? ROUTES.category(categorySlug) : ROUTES.home}
+            to={data.category ? ROUTES.category(data.category) : ROUTES.home}
             className="border border-yellow-700 rounded-full px-3 py-1 uppercase text-xs font-semibold tracking-wide text-yellow-500 bg-yellow-900/20"
           >
-            {categoryName}
+            {getCategoryName(data.category)}
           </Link>
           {/* All the important product information */}
           <AboutProduct data={data} />
