@@ -1,26 +1,45 @@
 import { useSearchParams } from "react-router";
 
-import { getAllProductsURL } from "../../shared/constants";
+import { getAllProductsURL, ROUTES } from "../../shared/constants";
 import useFetch from "../../shared/hooks/useFetch";
 import type { ProductResponse } from "../../shared/types/api.types";
 import ProductListingGridSkeleton from "../ProductListingPage/components/ProductGrid/ProductGridSkeleton";
 import ProductGrid from "../ProductListingPage/components/ProductGrid/ProductGrid";
+import BackButton from "../../shared/components/ui/BackButton";
+import useScrollToTop from "../../shared/hooks/useScrollToTop";
 
 function AllProducts() {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const { data, loading, error } = useFetch<ProductResponse>(
     getAllProductsURL(
       Number(searchParams.get("page") ?? 1),
       Number(searchParams.get("limit") ?? 12),
     ),
   );
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  const { topRef } = useScrollToTop(loading);
 
   return (
     <>
+      <div className="absolute top-0" ref={topRef}></div>
+      <BackButton to={ROUTES.home} label="All Categories" />
+      <header className="mb-6">
+        <p className="text-xs text-yellow-500 uppercase tracking-widest mb-1">
+          All Products
+        </p>
+        <div className="flex justify-between items-end">
+          <h1 className="text-2xl md:text-3xl font-bold text-zinc-100">
+            All Products
+          </h1>
+          <div className="text-xs text-zinc-400 border border-zinc-800 rounded-full p-1 px-3">
+            {data?.total ?? 0} products
+          </div>
+        </div>
+      </header>
       {loading ? (
         <ProductListingGridSkeleton />
+      ) : error ? (
+        <div>Error : {error}</div>
       ) : data && data.total ? (
         <div>
           <ProductGrid products={data.products} source="ALL_PRODUCTS" />

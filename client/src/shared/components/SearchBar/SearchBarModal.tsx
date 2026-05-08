@@ -151,9 +151,10 @@ function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
                   <Link
                     key={product.id}
                     to={ROUTES.product(
-                      product.category,
+                      "SEARCH",
                       product.id,
                       product.title,
+                      product.category,
                     )}
                     onClick={() => setIsOpen(false)}
                   >
