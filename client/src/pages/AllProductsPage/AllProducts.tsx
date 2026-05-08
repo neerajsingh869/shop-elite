@@ -14,7 +14,7 @@ function AllProducts() {
   const { data, loading, error } = useFetch<ProductResponse>(
     getAllProductsURL(
       Number(searchParams.get("page") ?? 1),
-      Number(searchParams.get("limit") ?? 12),
+      Number(searchParams.get("limit") ?? 100),
     ),
   );
   const { topRef } = useScrollToTop(loading);
