@@ -2,7 +2,7 @@ import type { ProductFilters } from "../../features/products/product.types";
 import createProductSlug from "../utils/createProductSlug";
 
 export const BASE_URL = import.meta.env.VITE_API_URL;
-export type SOURCE = "ALL_PRODUCTS" | "PRODUCT_LISTING";
+export type SOURCE = "ALL_PRODUCTS" | "PRODUCT_LISTING" | "SEARCH";
 
 export const GET_CATEGORIES_URL = `${BASE_URL}/api/products/categories`;
 export const GET_PRODUCT_URL = (productId: number) =>
@@ -13,7 +13,7 @@ export const getAllProductsURL = (page?: number, limit?: number) => {
   if (page) params.set("page", String(page));
   if (limit) params.set("limit", String(limit));
 
-  return `${BASE_URL}/api/products?${params.toString()}`;
+  return `${BASE_URL}/api/products/search?${params.toString()}`;
 };
 
 export const buildSearchURL = (filters: ProductFilters, page?: number) => {
@@ -48,12 +48,12 @@ export const ROUTES = {
   home: "/",
   category: (categorySlug: string) => `/${categorySlug}`,
   product: (
-    source: "ALL_PRODUCTS" | "PRODUCT_LISTING",
+    source: SOURCE,
     productId: number,
     title: string,
     categorySlug: string | undefined,
   ) => {
-    if (source === "PRODUCT_LISTING") {
+    if (source === "PRODUCT_LISTING" || source === "SEARCH") {
       return `/${categorySlug}/${productId}/${createProductSlug(title)}`;
     }
     return `/products/${productId}/${createProductSlug(title)}`;

@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import type { ProductDetail } from "../../shared/types/api.types";
 
@@ -27,9 +27,6 @@ function ProductDetailPage() {
   const productId = Number(params.productId);
   const productSlug = params.productSlug;
 
-  const location = useLocation();
-  const source = location?.state?.source || "/";
-
   const { data, error, loading } = useFetch<ProductDetail>(
     GET_PRODUCT_URL(productId),
   );
@@ -55,22 +52,7 @@ function ProductDetailPage() {
   return (
     <>
       <div className="absolute top-0" ref={topRef}></div>
-      <BackButton
-        to={
-          source === "ALL_PRODUCTS"
-            ? "/products"
-            : source === "PRODUCT_LISTING"
-              ? ROUTES.category(data.category)
-              : ROUTES.home
-        }
-        label={
-          source === "ALL_PRODUCTS"
-            ? "Back to All Products"
-            : source === "PRODUCT_LISTING"
-              ? `Back to ${getCategoryName(data.category)}`
-              : "Back to Home"
-        }
-      />
+      <BackButton label="Go Back" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image gallery */}
         <ImageGallery images={data.images} />
