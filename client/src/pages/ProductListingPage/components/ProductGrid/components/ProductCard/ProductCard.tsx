@@ -1,16 +1,20 @@
 import { Star } from "lucide-react";
 import type { Product } from "../../../../../../shared/types/api.types";
 import { Link } from "react-router";
-import { ROUTES } from "../../../../../../shared/constants";
+import { ROUTES, type SOURCE } from "../../../../../../shared/constants";
 
 interface ProductCardProps {
   product: Product;
   categorySlug?: string;
+  source: SOURCE;
 }
 
-function ProductCard({ product, categorySlug }: ProductCardProps) {
+function ProductCard({ product, categorySlug, source }: ProductCardProps) {
   return (
-    <Link to={ROUTES.product(categorySlug!, product.id, product.title)}>
+    <Link
+      to={ROUTES.product(source, product.id, product.title, categorySlug)}
+      state={{ source }}
+    >
       <article className="group bg-zinc-950 border-zinc-800 border rounded-xl transition duration-300 hover:border-yellow-700/50 hover:-translate-y-1 overflow-hidden">
         <div className="relative aspect-square bg-neutral-900 rounded-t-xl">
           <img

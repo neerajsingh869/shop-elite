@@ -29,6 +29,10 @@ function AppRoutes() {
           element={<ProductDetailPage />}
         />
         <Route path="/products" element={<AllProducts />} />
+        <Route
+          path="/products/:productId/:productSlug"
+          element={<ProductDetailPage />}
+        />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<NotFoundPage />} />
