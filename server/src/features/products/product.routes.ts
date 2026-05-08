@@ -4,7 +4,6 @@ import * as productController from "./product.controller.js";
 
 const router = Router();
 
-router.get("/", productController.getAllProductsHandler)
 router.get("/search", productController.searchProductsHandler);
 router.get("/categories", productController.getAllCategoriesHandler);
 router.get("/category-metadata", productController.getCategoryMetadataHandler);
