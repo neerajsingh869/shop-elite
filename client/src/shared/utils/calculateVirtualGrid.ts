@@ -1,44 +1,42 @@
-import type { Product } from "../types/api.types";
-
-interface CalculateVirtualGridInput {
-  items: Product[]; // total items on page
-  scrollTop: number; // how far scrolled
-  containerHeight: number; // height of scroll container
-  rowHeight: number; // card height + gap (row height)
-  columns: number; // total number of columns
+interface CalculateVirtualGridParams<T> {
+  items: T[]; // total items
+  scrollTop: number; // how much scrolled from top of container
+  containerHeight: number; // height of container
+  rowHeight: number; // height of one row
+  columns: number; // total number of columns in grid
+  overscan?: number; // buffer to keep (both above and below) to make scrolling smooth
 }
 
-interface CalculateVirtualGridOutput {
-  visibleItems: Product[]; // only items to render
-  totalHeight: number; // scrollbar height
-  offsetY: number; // translateY value to position items correctly
-}
-
-function calculateVirtualGrid({
+function calculateVirtualGrid<T>({
   items,
   scrollTop,
   containerHeight,
   rowHeight,
   columns,
-}: CalculateVirtualGridInput): CalculateVirtualGridOutput {
+  overscan = 2,
+}: CalculateVirtualGridParams<T>) {
   const totalRows = Math.ceil(items.length / columns);
 
-  const firstVisibleRowIndex = Math.floor(scrollTop / rowHeight);
-  const totalVisibleRows = Math.ceil(containerHeight / rowHeight);
-  const lastVisibleRowIndex = firstVisibleRowIndex + totalVisibleRows + 2; // +2 buffer for smooth scroll
-
-  const firstVisibleItemIndex = firstVisibleRowIndex * columns;
-  const lastVisibleItemIndex = Math.min(
-    lastVisibleRowIndex * columns,
-    items.length,
+  const startRow = Math.max(
+    0,
+    Math.floor(scrollTop / rowHeight) - overscan,
   );
-  const visibleItems = items.slice(firstVisibleItemIndex, lastVisibleItemIndex);
 
-  const totalHeight = totalRows * rowHeight;
+  const endRow = Math.min(
+    totalRows,
+    Math.ceil((scrollTop + containerHeight) / rowHeight) + overscan,
+  );
 
-  const offsetY = firstVisibleRowIndex * rowHeight;
+  const startIndex = startRow * columns;
+  const endIndex = endRow * columns;
 
-  return { visibleItems, totalHeight, offsetY };
+  const visibleItems = items.slice(startIndex, endIndex);
+
+  return {
+    visibleItems,
+    totalHeight: totalRows * rowHeight, // show the scroll as if all items exist
+    offsetY: startRow * rowHeight, // match scoll exactly by showing right row
+  };
 }
 
 export default calculateVirtualGrid;
