@@ -49,26 +49,26 @@ export async function searchProductsHandler(req: Request, res: Response) {
     sortBy: getSortBy(q.sortBy),
   };
 
-  let pagination;
+  let offsetPagination;
   if (q.limit || q.page) {
     const limit = getNumber(q.limit);
     const page = getNumber(q.page);
-    pagination = { page: page ?? 1, limit: limit ?? 12 };
+    offsetPagination = { page: page ?? 1, limit: limit ?? 12 };
   }
 
   try {
     const { products, total } = await productService.searchProducts(
       filters,
-      pagination,
+      offsetPagination,
     );
 
     res.json({
       products,
       total,
-      ...(pagination && {
-        limit: pagination.limit,
-        page: pagination.page,
-        totalPages: Math.ceil(total / pagination.limit),
+      ...(offsetPagination && {
+        limit: offsetPagination.limit,
+        page: offsetPagination.page,
+        totalPages: Math.ceil(total / offsetPagination.limit),
       }),
     });
   } catch (err) {
@@ -80,17 +80,40 @@ export async function searchProductsHandler(req: Request, res: Response) {
 // POST /api/products/llm-search
 // Body: { userQuery: "apple laptops under 2000" }
 export async function llmSearchHandler(req: Request, res: Response) {
-  const { userQuery } = req.body;
+  const { userQuery, cursor: cursorFromBody, limit } = req.body;
 
   if (!userQuery) {
     res.status(400).json({ message: "User query is required" });
     return;
   }
 
+  let cursorPagination = {
+    cursor: getNumber(cursorFromBody),
+    limit: getNumber(limit) ?? 12,
+  };
+
   try {
     const { filters, llmFailed } = await extractFiltersFromQuery(userQuery);
-    const { products } = await productService.searchProducts(filters);
-    res.json({ products, filters, llmFailed }); // return filters so frontend can show "Searching for..."
+    const {
+      products,
+      total,
+      latestCursor,
+      hasMore,
+    } = await productService.searchProducts(
+      filters,
+      undefined,
+      cursorPagination,
+    );
+
+    res.json({
+      products,
+      total,
+      filters,
+      llmFailed,
+      latestCursor,
+      limit: cursorPagination.limit,
+      hasMore,
+    }); // return filters so frontend can show "Searching for..."
   } catch (err) {
     console.error("LLM search failed:", err);
     res.status(500).json({ message: "Search failed. Please try again." });
