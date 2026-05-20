@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
-import type { Product } from "../../../../../../shared/types/api.types";
 import { Link } from "react-router";
+
+import type { Product } from "../../../../../../shared/types/api.types";
 import { ROUTES, type SOURCE } from "../../../../../../shared/constants";
 
 interface ProductCardProps {

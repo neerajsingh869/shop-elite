@@ -4,9 +4,10 @@ import { getAllProductsURL, ROUTES } from "../../shared/constants";
 import useFetch from "../../shared/hooks/useFetch";
 import type { ProductResponse } from "../../shared/types/api.types";
 import ProductListingGridSkeleton from "../ProductListingPage/components/ProductGrid/ProductGridSkeleton";
-import ProductGrid from "../ProductListingPage/components/ProductGrid/ProductGrid";
 import BackButton from "../../shared/components/ui/BackButton";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import ProductCard from "../ProductListingPage/components/ProductGrid/components/ProductCard/ProductCard";
+import VirtualGrid from "../../shared/components/VirtualGrid/VirtualGrid";
 
 function AllProducts() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,7 +43,16 @@ function AllProducts() {
         <div>Error : {error}</div>
       ) : data && data.total ? (
         <div>
-          <ProductGrid products={data.products} source="ALL_PRODUCTS" />
+          <VirtualGrid
+            items={data.products}
+            renderItem={(product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                source="ALL_PRODUCTS"
+              />
+            )}
+          />
           <div className="flex justify-center gap-2 mt-3">
             {data.totalPages &&
               data.totalPages > 1 &&
