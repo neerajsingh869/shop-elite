@@ -40,7 +40,8 @@ function formatCategoryName(slug: string) {
 
 export async function searchProducts(
   filters: ProductFilters,
-  pagination?: { page: number; limit: number },
+  offsetPagination?: { page: number; limit: number },
+  cursorPagination?: { cursor: number | undefined; limit: number },
 ) {
   const where: ProductWhereInput = {
     ...(filters.keyword && {
@@ -76,12 +77,28 @@ export async function searchProducts(
     prisma.product.findMany({
       where,
       orderBy: buildOrderBy(filters.sortBy),
-      ...(pagination && {
-        skip: (pagination.page - 1) * pagination.limit,
-        take: pagination.limit,
+      ...(offsetPagination && {
+        skip: (offsetPagination.page - 1) * offsetPagination.limit,
+        take: offsetPagination.limit,
+      }),
+      ...(cursorPagination && {
+        take: cursorPagination.limit,
+        ...(cursorPagination.cursor && {
+          skip: 1,
+          cursor: {
+            id: cursorPagination.cursor,
+          },
+        }),
       }),
     }),
   ]);
+
+  if (cursorPagination) {
+    const hasMore = products.length === cursorPagination.limit;
+    const latestCursor =
+      products.length > 0 ? products[products.length - 1].id : undefined;
+    return { products, total, latestCursor, hasMore };
+  }
 
   return { products, total };
 }
