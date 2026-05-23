@@ -97,7 +97,7 @@ export async function searchProducts(
     const hasMore = products.length === cursorPagination.limit;
     const latestCursor =
       products.length > 0 ? products[products.length - 1].id : undefined;
-    return { products, total, latestCursor, hasMore };
+    return { products, total, cursor: latestCursor, hasMore };
   }
 
   return { products, total };
