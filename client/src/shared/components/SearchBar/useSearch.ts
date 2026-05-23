@@ -14,6 +14,9 @@ interface SearchState {
   loading: boolean;
   error: string | null;
   hasSearched: boolean;
+
+  // below for infinite scrolling
+  hasMore: boolean;
 }
 
 const INITIAL_STATE = {
@@ -23,44 +26,58 @@ const INITIAL_STATE = {
   loading: false,
   error: null,
   hasSearched: false,
+  hasMore: true,
 };
 
-function useSearch(query: string): SearchState {
+function useSearch(query: string): {
+  state: SearchState;
+  loadMore: () => void;
+} {
   const [state, setState] = useState<SearchState>(INITIAL_STATE);
   const controllerRef = useRef<AbortController | null>(null);
+  const cursorRef = useRef<number | undefined>(undefined);
 
-  const fetchData = useCallback(async (searchQuery: string) => {
-    controllerRef.current?.abort();
-    controllerRef.current = new AbortController();
+  const fetchData = useCallback(
+    async (searchQuery: string, cursor: number | undefined) => {
+      controllerRef.current?.abort();
+      controllerRef.current = new AbortController();
 
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+      setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/products/llm-search`,
-        { userQuery: searchQuery },
-        { signal: controllerRef.current?.signal },
-      );
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/products/llm-search`,
+          { userQuery: searchQuery, cursor },
+          { signal: controllerRef.current?.signal },
+        );
 
-      setState({
-        products: data.products,
-        filters: data.filters,
-        llmFailed: data.llmFailed,
-        loading: false,
-        error: null,
-        hasSearched: true,
-      });
-    } catch (err) {
-      if (axios.isCancel(err)) return;
+        cursorRef.current = data.cursor;
+        setState((prev) => ({
+          ...prev,
+          products:
+            cursor === undefined
+              ? data.products
+              : [...prev.products, ...data.products],
+          filters: data.filters,
+          llmFailed: data.llmFailed,
+          loading: false,
+          error: null,
+          hasSearched: true,
+          hasMore: data.hasMore,
+        }));
+      } catch (err) {
+        if (axios.isCancel(err)) return;
 
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Search failed",
-        hasSearched: true,
-      }));
-    }
-  }, []);
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: err instanceof Error ? err.message : "Search failed",
+          hasSearched: true,
+        }));
+      }
+    },
+    [],
+  );
 
   const debouncedFetch = useRef(debounce(fetchData, 300)).current;
 
@@ -70,7 +87,17 @@ function useSearch(query: string): SearchState {
       return;
     }
 
-    debouncedFetch(query);
+    // If query changes, update the state in a way
+    // that old products and filters stay until new response
+    // overwrite them
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      hasMore: true,
+    }));
+    cursorRef.current = undefined;
+    debouncedFetch(query, cursorRef.current);
 
     return () => {
       controllerRef.current?.abort();
@@ -78,7 +105,7 @@ function useSearch(query: string): SearchState {
     };
   }, [query, debouncedFetch]);
 
-  return state;
+  return { state, loadMore: () => fetchData(query, cursorRef.current) };
 }
 
 export default useSearch;
