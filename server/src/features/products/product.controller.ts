@@ -97,7 +97,7 @@ export async function llmSearchHandler(req: Request, res: Response) {
     const {
       products,
       total,
-      latestCursor,
+      cursor,
       hasMore,
     } = await productService.searchProducts(
       filters,
@@ -110,7 +110,7 @@ export async function llmSearchHandler(req: Request, res: Response) {
       total,
       filters,
       llmFailed,
-      latestCursor,
+      cursor,
       limit: cursorPagination.limit,
       hasMore,
     }); // return filters so frontend can show "Searching for..."
