@@ -16,9 +16,7 @@ function getString(val: unknown): string | undefined {
 }
 
 function getNumber(val: unknown): number | undefined {
-  const str = getString(val);
-  if (!str) return undefined;
-  const num = Number(str);
+  const num = Number(val);
   return isNaN(num) ? undefined : num;
 }
 
