@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Search, ShoppingCart, User } from "lucide-react";
 
-import SearchModal from "./components/SearchModal/SearchModalHeader";
 import { ROUTES } from "../../constants";
 
 function Header() {
@@ -20,9 +19,6 @@ function Header() {
 
   return (
     <>
-      {showSearchModal && (
-        <SearchModal setShowSearchModal={setShowSearchModal} />
-      )}
       <header className="border-b border-b-zinc-800">
         <div className="max-w-7xl flex justify-between items-center mx-auto py-6 px-6 md:px-8">
           <Link to={ROUTES.home} className="text-xl text-yellow-500 font-bold">
