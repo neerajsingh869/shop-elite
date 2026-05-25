@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Search } from "lucide-react";
 import { createPortal } from "react-dom";
-import { useState, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type SetStateAction } from "react";
 
 import useSearch from "./useSearch";
 import { ROUTES } from "../../constants";
@@ -12,9 +12,43 @@ interface SearchBarModalProps {
 
 function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
   const [query, setQuery] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  const { products, filters, llmFailed, loading, error, hasSearched } =
-    useSearch(query);
+  const {
+    state: {
+      products,
+      filters,
+      llmFailed,
+      loading,
+      loadingMore,
+      error,
+      hasSearched,
+      hasMore,
+    },
+    loadMore,
+  } = useSearch(query);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // `hasMore` so that we can avoid extra fetch request when
+        // we already have fetched entire results from backend
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMore();
+        }
+      },
+      {
+        root: scrollContainerRef.current,
+      },
+    );
+
+    observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, loadingMore, products.length]);
 
   return createPortal(
     <div
@@ -50,6 +84,7 @@ function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
           </button>
         </div>
         <div
+          ref={scrollContainerRef}
           className={`max-h-[460px] w-full overflow-auto transition-[height] duration-1000 rounded-b-xl border border-zinc-800 border-t-0 ${!hasSearched && !loading && query.length !== 0 && "border-b-0"}`}
         >
           {/* Case 1: Ideal (no query) */}
@@ -74,7 +109,7 @@ function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
             ))
           ) : // Case 3: Proper error
           error ? (
-            <div>Error : {error}</div>
+            <div className="p-4 text-red-200 text-sm">Error : {error}</div>
           ) : (
             // Case 4: llm failed (show llm failed error along with products)
             <>
@@ -191,6 +226,21 @@ function SearchBarModal({ setIsOpen }: SearchBarModalProps) {
                       </div>
                     </article>
                   </Link>
+                ))}
+              {/* Sentinel only when there are products */}
+              {products.length > 0 && <div ref={sentinelRef} />}
+              {loadingMore &&
+                Array.from({ length: 3 }).map((_, index) => (
+                  <article
+                    key={index}
+                    className="flex gap-2 h-24 p-2 border border-zinc-800 bg-zinc-950"
+                  >
+                    <div className="aspect-square bg-neutral-900 rounded-md animate-pulse"></div>
+                    <div className="w-full flex flex-col gap-2 justify-center">
+                      <p className="animate-pulse w-2/3 h-6 bg-neutral-900"></p>
+                      <div className="animate-pulse bg-neutral-900 h-4 w-32"></div>
+                    </div>
+                  </article>
                 ))}
             </>
           )}
