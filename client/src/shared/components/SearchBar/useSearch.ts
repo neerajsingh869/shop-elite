@@ -11,12 +11,13 @@ interface SearchState {
   products: ProductAPIResponse[];
   filters: ProductFiltersAPIResponse;
   llmFailed: boolean;
-  loading: boolean;
+  loading: boolean; // only for the first request
   error: string | null;
   hasSearched: boolean;
 
   // below for infinite scrolling
   hasMore: boolean;
+  loadingMore: boolean;
 }
 
 const INITIAL_STATE = {
@@ -27,6 +28,7 @@ const INITIAL_STATE = {
   error: null,
   hasSearched: false,
   hasMore: true,
+  loadingMore: false,
 };
 
 function useSearch(query: string): {
@@ -42,7 +44,12 @@ function useSearch(query: string): {
       controllerRef.current?.abort();
       controllerRef.current = new AbortController();
 
-      setState((prev) => ({ ...prev, loading: true, error: null }));
+      setState((prev) => ({
+        ...prev,
+        loading: cursor === undefined,
+        error: null,
+        loadingMore: cursor !== undefined,
+      }));
 
       try {
         const { data } = await axios.post(
@@ -64,6 +71,7 @@ function useSearch(query: string): {
           error: null,
           hasSearched: true,
           hasMore: data.hasMore,
+          loadingMore: false,
         }));
       } catch (err) {
         if (axios.isCancel(err)) return;
@@ -73,6 +81,7 @@ function useSearch(query: string): {
           loading: false,
           error: err instanceof Error ? err.message : "Search failed",
           hasSearched: true,
+          loadingMore: false,
         }));
       }
     },
@@ -95,6 +104,7 @@ function useSearch(query: string): {
       loading: true,
       error: null,
       hasMore: true,
+      loadingMore: false,
     }));
     cursorRef.current = undefined;
     debouncedFetch(query, cursorRef.current);
@@ -105,7 +115,12 @@ function useSearch(query: string): {
     };
   }, [query, debouncedFetch]);
 
-  return { state, loadMore: () => fetchData(query, cursorRef.current) };
+  const loadMore = useCallback(
+    () => fetchData(query, cursorRef.current),
+    [fetchData, query],
+  );
+
+  return { state, loadMore };
 }
 
 export default useSearch;
