@@ -1,22 +1,10 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Search, ShoppingCart, User } from "lucide-react";
+import { ShoppingCart, User } from "lucide-react";
 
 import { ROUTES } from "../../constants";
+import SearchBar from "../SearchBar/SearchBar";
 
 function Header() {
-  const [showSearchModal, setShowSearchModal] = useState(false);
-
-  useEffect(() => {
-    if (showSearchModal) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [showSearchModal]);
-
   return (
     <>
       <header className="border-b border-b-zinc-800">
@@ -25,11 +13,7 @@ function Header() {
             ShopElite
           </Link>
           <div className="flex gap-4 sm:gap-6 md:gap-8 items-center justify-between">
-            <Search
-              className="cursor-pointer"
-              size={20}
-              onClick={() => setShowSearchModal(true)}
-            />
+            <SearchBar />
             <ShoppingCart className="cursor-pointer" size={20} />
             <User className="cursor-pointer" size={20} />
           </div>
