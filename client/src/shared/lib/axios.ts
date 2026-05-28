@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { store } from "../../store";
-import type { User } from "../../features/auth/types";
+import type { AuthResponse, User } from "../../features/auth/types";
 import { clearAuth, setAuth } from "../../features/auth/authSlice";
 
 export const api = axios.create({
@@ -79,9 +79,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const { data } = await api.post<{ user: User; accessToken: string }>(
-        "/auth/refresh",
-      );
+      const { data } = await api.post<AuthResponse>("/auth/refresh");
 
       // dispatch setAuth directly to redux store
       store.dispatch(setAuth(data));
