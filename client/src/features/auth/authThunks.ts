@@ -11,9 +11,13 @@ import {
 import { clearAuth, setAuth, setInitStatus } from "./authSlice";
 import type { LoginFormData, RegisterFormData } from "./types";
 
+// thunks have responsibility of calling the api and updating the store
 export const registerThunk = createAsyncThunk(
   "auth/register",
-  async (data: RegisterFormData, { dispatch, rejectWithValue }) => {
+  async (
+    data: Omit<RegisterFormData, "confirmPassword">,
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const res = await registerApi(data);
 
