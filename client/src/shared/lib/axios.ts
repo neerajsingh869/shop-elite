@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { store } from "../../store";
-import type { AuthResponse, User } from "../../features/auth/types";
+import type { AuthResponse } from "../../features/auth/types";
 import { clearAuth, setAuth } from "../../features/auth/authSlice";
 
 export const api = axios.create({
