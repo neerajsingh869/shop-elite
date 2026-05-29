@@ -41,15 +41,12 @@ export function useAuth() {
   const login = useCallback(
     async (data: LoginFormData) => {
       const result = await dispatch(loginThunk(data));
-      console.log(result);
-      console.log(loginThunk);
 
       if (loginThunk.fulfilled.match(result)) {
         const state = location.state as { from?: { pathname: string } };
 
-        navigate(state.from?.pathname ?? "/", { replace: true });
+        navigate(state?.from?.pathname ?? "/", { replace: true });
       } else {
-        console.log(result);
         throw new Error(result.payload as string);
       }
     },
