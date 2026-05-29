@@ -5,7 +5,7 @@ import type { AuthResponse } from "../../features/auth/types";
 import { clearAuth, setAuth } from "../../features/auth/authSlice";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:4000/api",
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:4000",
   // tell browser to send httpOnly cookie with every request
   // equivalent to credentials: "include" in fetch requests
   withCredentials: true,

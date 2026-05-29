@@ -7,7 +7,7 @@ interface AuthState {
   isAuthenticated: boolean;
 
   // "idle" => app just started
-  // "loading" => checking for existing session (call /refresh on mount)
+  // "loading" => checking for existing session (call /api/auth/refresh on mount)
   // "settled" => check is done, we now know if user is logged in or not
   initStatus: "idle" | "loading" | "settled";
 }
