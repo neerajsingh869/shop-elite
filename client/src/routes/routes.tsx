@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
 import SuspenseFallback from "../shared/components/SuspenseFallback/SuspenseFallback";
 import AllProducts from "../pages/AllProductsPage/AllProducts";
+import ProtectedRoute from "../shared/components/ProtectedRoute/ProtectedRoute";
 
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ProductDetailPage = lazy(
@@ -13,8 +14,8 @@ const ProductListingPage = lazy(
 );
 const HomePage = lazy(() => import("../pages/HomePage/Home"));
 
-const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
+const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 
 function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ function AppRoutes() {
       {/* Suspense is required with lazy() */}
       {/* Shows fallback while the page chunk is downloading */}
       <Routes>
+        {/* public routes - anyone can visit */}
         <Route path="/" element={<HomePage />} />
         <Route path="/:categorySlug" element={<ProductListingPage />} />
         <Route
@@ -33,8 +35,16 @@ function AppRoutes() {
           path="/products/:productId/:productSlug"
           element={<ProductDetailPage />}
         />
+
+        {/* Auth routes */}
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        {/* protected routes - must be logged in */}
+        <Route element={<ProtectedRoute />}>
+          {/* add account, checkout, etc pages after you build them */}
+        </Route>
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
