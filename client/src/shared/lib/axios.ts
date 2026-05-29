@@ -69,7 +69,7 @@ api.interceptors.response.use(
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       }).then((token) => {
-        originalRequest.header.Authorization = `Bearer ${token}`;
+        originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       });
     }
@@ -79,13 +79,13 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const { data } = await api.post<AuthResponse>("/auth/refresh");
+      const { data } = await api.post<AuthResponse>("/api/auth/refresh");
 
       // dispatch setAuth directly to redux store
       store.dispatch(setAuth(data));
 
       // update the failed request's header
-      originalRequest.header.Authorization = `Bearer ${data.accessToken}`;
+      originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 
       // unblock all queue requests
       processQueue(null, data.accessToken);
@@ -103,7 +103,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
       return Promise.reject(refreshError);
     } finally {
-      isRefreshing = true;
+      isRefreshing = false;
     }
   },
 );
