@@ -57,10 +57,12 @@ api.interceptors.response.use(
     // only handle 401
     const is401 = error.response?.status === 401;
     const isRetry = originalRequest._retry;
-    const isRefreshUrl = originalRequest.url?.includes("/auth/refresh");
+    const isRefreshUrl = originalRequest.url?.includes("/api/auth/refresh");
+    const isLoginUrl = originalRequest.url?.includes("/api/auth/login");
+    const isRegisterUrl = originalRequest.url?.includes("/api/auth/register");
 
     // return early with error in case of failure caused by other reasons
-    if (!is401 || isRetry || isRefreshUrl) {
+    if (!is401 || isRetry || isRefreshUrl || isLoginUrl || isRegisterUrl) {
       return Promise.reject(error);
     }
 
