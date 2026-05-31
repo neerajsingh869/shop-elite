@@ -29,7 +29,7 @@ export function useAuth() {
       if (registerThunk.fulfilled.match(result)) {
         const state = location.state as { from?: { pathname: string } };
 
-        navigate(state.from?.pathname ?? "/", { replace: true });
+        navigate(state?.from?.pathname ?? "/", { replace: true });
       } else {
         // registerThunk.rejected — result.payload has the error message
         throw new Error(result.payload as string);
@@ -62,7 +62,7 @@ export function useAuth() {
       if (googleAuthThunk.fulfilled.match(result)) {
         const state = location.state as { from?: { pathname: string } };
 
-        navigate(state.from?.pathname ?? "/", { replace: true });
+        navigate(state?.from?.pathname ?? "/", { replace: true });
       } else {
         console.log(result);
         throw new Error(result.payload as string);
