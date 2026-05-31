@@ -1,11 +1,10 @@
 // src/routes/index.tsx
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
-import SuspenseFallback from "../shared/components/SuspenseFallback/SuspenseFallback";
+
 import AllProducts from "../pages/AllProductsPage/AllProducts";
 import ProtectedRoute from "../shared/components/ProtectedRoute/ProtectedRoute";
-
-const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+import SuspenseFallback from "../shared/components/SuspenseFallback/SuspenseFallback";
 const ProductDetailPage = lazy(
   () => import("../pages/ProductDetailPage/ProductDetail"),
 );
@@ -13,9 +12,9 @@ const ProductListingPage = lazy(
   () => import("../pages/ProductListingPage/ProductListing"),
 );
 const HomePage = lazy(() => import("../pages/HomePage/Home"));
-
-const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
-const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const LoginPage = lazy(() => import("../features/auth/LoginPage"));
+const RegisterPage = lazy(() => import("../features/auth/RegisterPage"));
 
 function AppRoutes() {
   return (

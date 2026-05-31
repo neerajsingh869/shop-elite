@@ -1,4 +1,5 @@
 import { BrowserRouter } from "react-router";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "./App.css";
 import { store } from "./store";
@@ -24,9 +25,11 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </GoogleOAuthProvider>
     </Provider>
   );
 }
