@@ -2,12 +2,12 @@ import * as z from "zod";
 import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router";
+import { useGoogleLogin } from "@react-oauth/google";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Lock, Mail } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { AlertCircle, Eye, EyeOff, Lock, Mail } from "lucide-react";
 
 import { useAuth } from "./hooks";
-import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../../shared/components/ui/GoogleIcon";
 
 // zod schema for login form
@@ -26,6 +26,7 @@ function LoginPage() {
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -62,7 +63,9 @@ function LoginPage() {
           err.response?.data.message ?? "Login failed. Please try again",
         );
       } else {
-        setServerError("Something went wrong");
+        setServerError(
+          err instanceof Error ? err.message : "Something went wrong",
+        );
       }
     }
   };
@@ -107,13 +110,16 @@ function LoginPage() {
         )}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.25">
-            <label className="text-zinc-400 text-xs">Email address</label>
+            <label className="text-zinc-400 text-xs" htmlFor="email">
+              Email address
+            </label>
             <div className="relative">
               <Mail
                 size={16}
                 className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
               />
               <input
+                id="email"
                 type="email"
                 className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
                 placeholder="you@example.com"
@@ -125,18 +131,34 @@ function LoginPage() {
             </p>
           </div>
           <div className="flex flex-col gap-1.25">
-            <label className="text-zinc-400 text-xs">Password</label>
+            <label className="text-zinc-400 text-xs" htmlFor="password">
+              Password
+            </label>
             <div className="relative">
               <Lock
                 size={16}
                 className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
               />
               <input
-                type="password"
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
                 placeholder="••••••••••••"
                 {...register("password")}
               />
+              <button onClick={() => setShowPassword((v) => !v)} type="button">
+                {showPassword ? (
+                  <Eye
+                    size={16}
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                  />
+                ) : (
+                  <EyeOff
+                    size={16}
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                  />
+                )}
+              </button>
             </div>
             <p className="mt-1.5 text-xs text-red-400">
               {errors.password?.message}
