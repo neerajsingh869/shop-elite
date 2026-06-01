@@ -207,7 +207,7 @@ export async function googleAuth(googleAccessToken: string) {
 export async function logout(rawRefreshToken: string) {
   const tokenHash = hashToken(rawRefreshToken);
   // Mark as revoked (doesn't throw error if no record exists - user is already logged out)
-  await prisma.refreshToken.update({
+  await prisma.refreshToken.updateMany({
     where: { tokenHash },
     data: { isRevoked: true },
   });
