@@ -43,12 +43,12 @@ function AboutProduct({ data }: AboutProductProps) {
         <span className="text-zinc-500 line-through">
           $
           {(
-            data.price /
-            (1 - Math.round(data.discountPercentage) / 100)
+            Number(data.price) /
+            (1 - Math.round(Number(data.discountPercentage)) / 100)
           ).toFixed(2)}
         </span>
         <span className="text-emerald-400 bg-emerald-900/20 border border-emerald-800/40 rounded text-xs font-semibold uppercase px-2 py-0.5">
-          -{Math.round(data.discountPercentage)}% off
+          -{Math.round(Number(data.discountPercentage))}% off
         </span>
       </div>
       <ProductMetadata data={data} />
