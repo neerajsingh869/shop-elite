@@ -1,14 +1,18 @@
 # ShopElite 🛍️
 
-A full-stack e-commerce web application featuring **AI-powered natural language search**, a secure JWT authentication system with Google OAuth, and a polished, fully typed React frontend — built as a portfolio-grade project to demonstrate real-world engineering decisions.
+A full-stack e-commerce web application featuring **AI-powered natural language search**, production-grade JWT authentication with Google OAuth, custom virtualized rendering, and a fully typed React + Express codebase — built as a portfolio-grade project demonstrating real-world engineering decisions at every layer.
+
+**Live:** https://shopelite-ui.vercel.app &nbsp;|&nbsp; **API:** https://shop-elite-api.onrender.com
+
+> ⚠️ Backend runs on Render's free tier. The first request after a period of inactivity may take ~30 seconds to wake up.
 
 ---
 
 ## ✨ What Makes This Interesting
 
-### 🤖 LLM-Powered Search
+### 🤖 LLM-Powered Natural Language Search
 
-Type the way you think. ShopElite's search bar understands natural language and translates it into structured filters behind the scenes — no rigid keyword matching required.
+Type the way you think. ShopElite's search understands natural language and translates it into structured filters — no rigid keyword matching required.
 
 ```
 "cheap apple phones under 1000 dollars"
@@ -21,20 +25,35 @@ Type the way you think. ShopElite's search bar understands natural language and 
 → { keyword: "phone", brand: "Samsung", availabilityStatus: "In Stock" }
 ```
 
-- Powered by **Groq SDK** (OpenAI-compatible API)
-- Extracted filters are displayed as tags in the UI so users understand exactly what the model interpreted
-- Graceful degradation: if the LLM call fails for any reason, the app silently falls back to keyword-only search and surfaces a friendly notice
-- Debounced requests (300ms) with `AbortController` to cancel in-flight requests on each keystroke
+- Powered by **Groq SDK** (blazing-fast LLM inference)
+- Extracted filters displayed as tags so users see exactly what the model interpreted
+- **Graceful degradation** — if the LLM call fails, the app silently falls back to keyword-only search with a friendly notice. The product experience never breaks.
+- **Cursor-based infinite scroll** — search results paginate on demand without losing position
+- **Debounced requests (300ms)** with `AbortController` to cancel in-flight requests on each keystroke
+- **In-memory metadata cache** — categories, brands, and availability statuses are fetched once and cached on the server. Every LLM search call gets fresh context without a DB round-trip.
+- **`Ctrl+K` / `Cmd+K`** keyboard shortcut to open the search modal from anywhere in the app
 
-### 🔐 Production-Grade Authentication
+### 🔐 Production-Grade JWT Authentication
 
 A lot of projects stop at "store the JWT in localStorage." This one goes further:
 
-- **Refresh token rotation** — every refresh issues a new pair of tokens and revokes the old one
-- **Token reuse detection** — if a refresh token is used after already being rotated (a sign of theft), _all_ sessions for that user are immediately revoked
-- **Refresh tokens stored as hashes** — the database never stores raw tokens; even a full DB leak exposes nothing usable
+- **Dual-token architecture** — short-lived access tokens (15 min) for stateless request verification + long-lived refresh tokens (7 days) for session continuity
+- **Refresh token rotation** — every refresh issues a new pair of tokens and revokes the old one; tokens are single-use
+- **Token reuse detection** — if a previously rotated token is presented again (a sign of theft), *all* sessions for that user are immediately revoked
+- **Tokens stored as SHA-256 hashes** — the database never holds raw tokens; a full DB breach exposes nothing usable
 - **Google OAuth** — accounts created via Google are automatically linked if an email-matching record already exists
-- **HTTP-only cookies** — tokens never touch JavaScript on the client
+- **httpOnly cookies** — refresh tokens never touch JavaScript; immune to XSS attacks
+- **Silent refresh via Axios interceptors** — when an access token expires, the interceptor catches the 401, silently refreshes in the background, and retries the original request. Users never see a logout.
+- **Concurrent request queue** — if multiple requests expire simultaneously, only one refresh call is made. All others wait in a queue and are retried once the new token arrives.
+
+### ⚡ Custom Virtualized Grid
+
+The All Products page renders hundreds of product cards using a **from-scratch virtualization implementation** — no react-window or react-virtual dependency.
+
+- Calculates visible rows based on scroll position, container height, and measured row height
+- Uses `ResizeObserver` to measure actual rendered row height dynamically
+- Renders only the items in the viewport plus a small overscan buffer
+- Handles dynamic column counts across breakpoints
 
 ---
 
@@ -44,34 +63,56 @@ This is a **pnpm monorepo** with a clear client/server split:
 
 ```
 shop-elite/
-├── client/                     # React frontend (Vite)
+├── client/                         # React frontend (Vite)
 │   └── src/
-│       ├── features/           # Feature-scoped types (auth)
-│       ├── pages/              # Route-level components
-│       │   ├── HomePage/
-│       │   ├── ProductListingPage/
-│       │   ├── ProductDetailPage/
-│       │   ├── LoginPage/
-│       │   └── RegisterPage/
-│       ├── routes/             # React Router config (lazy-loaded)
+│       ├── features/
+│       │   ├── auth/               # Auth slice, thunks, selectors, hooks, pages
+│       │   │   ├── authSlice.ts    # Redux state shape + reducers
+│       │   │   ├── authThunks.ts   # Async operations (login, logout, refresh)
+│       │   │   ├── authSelectors.ts
+│       │   │   ├── hooks.ts        # useAuth, useInitAuth
+│       │   │   ├── api.ts
+│       │   │   ├── LoginPage.tsx
+│       │   │   └── RegisterPage.tsx
+│       │   └── products/
+│       │       └── product.types.ts
+│       ├── pages/
+│       │   ├── HomePage/           # Category grid
+│       │   ├── ProductListingPage/ # Filtered product browse
+│       │   ├── ProductDetailPage/  # Full product view + reviews
+│       │   ├── AllProductsPage/    # Virtualized grid of all products
+│       │   └── NotFoundPage/
+│       ├── routes/                 # React Router config (lazy-loaded pages)
+│       ├── store/                  # Redux store + typed hooks
 │       └── shared/
-│           ├── components/     # Header, SearchBar, UI primitives
-│           ├── hooks/          # useFetch, useSearch, useScrollToTop
-│           ├── utils/          # debounce, slug helpers
-│           └── types/          # API response types
+│           ├── components/
+│           │   ├── Header/         # Auth-aware header with user menu
+│           │   ├── SearchBar/      # AI search modal + useSearch hook
+│           │   ├── VirtualGrid/    # Custom virtualization implementation
+│           │   ├── ProtectedRoute/ # Auth guard component
+│           │   ├── ErrorBoundary/
+│           │   └── ui/             # Reusable primitives (Button, Star, etc.)
+│           ├── hooks/
+│           │   ├── useFetch.ts     # Generic data fetching with AbortController
+│           │   └── useScrollToTop.ts
+│           ├── lib/
+│           │   └── axios.ts        # Axios instance + request/response interceptors
+│           ├── constants/          # API URL builders, route constants
+│           ├── types/              # Shared API response types
+│           └── utils/              # debounce, slug helpers, category name formatter
 │
-└── server/                     # Express backend
+└── server/                         # Express backend
     └── src/
         ├── features/
-        │   ├── auth/           # controller, service, routes
-        │   └── products/       # controller, service, LLM layer, routes
-        ├── middlewares/        # JWT authentication guard
-        ├── utils/              # JWT, bcrypt, cookie helpers
-        ├── config/             # Env validation
-        └── lib/                # Prisma client singleton
+        │   ├── auth/               # controller, service, routes
+        │   └── products/           # controller, service, LLM layer, routes, types
+        ├── middlewares/            # JWT authentication guard
+        ├── utils/                  # JWT sign/verify, bcrypt, cookie helpers
+        ├── config/                 # Env validation with Zod
+        └── lib/                    # Prisma client singleton
 ```
 
-The folder structure follows a **feature-based** convention — every feature owns its controller, service, and routes in one place. Shared utilities and UI live in `shared/`.
+The folder structure follows a **feature-based convention** — every feature owns its controller, service, and routes in one place. Shared utilities live in `shared/`.
 
 ---
 
@@ -79,90 +120,128 @@ The folder structure follows a **feature-based** convention — every feature ow
 
 ### Frontend
 
-| Technology            | Purpose                                     |
-| --------------------- | ------------------------------------------- |
-| React 19              | UI framework                                |
-| TypeScript 5.9        | Type safety across the entire codebase      |
-| Vite 7                | Build tool and dev server                   |
-| Tailwind CSS v4       | Utility-first styling                       |
-| React Router v7       | Client-side routing with lazy-loaded routes |
-| Redux Toolkit         | Global state management                     |
-| React Hook Form + Zod | Form handling with schema validation        |
-| Axios                 | HTTP client for LLM search endpoint         |
-| Lucide React          | Icon library                                |
+| Technology | Purpose |
+|---|---|
+| React 19 | UI framework |
+| TypeScript 5.9 | End-to-end type safety |
+| Vite 7 | Build tool and dev server |
+| Tailwind CSS v4 | Utility-first styling |
+| React Router v7 | Client-side routing with lazy-loaded pages |
+| Redux Toolkit | Global auth state (slice, thunks, selectors) |
+| React Hook Form + Zod | Form handling with schema validation |
+| Axios | HTTP client with request/response interceptors |
+| @react-oauth/google | Google OAuth popup flow |
+| Lucide React | Icon library |
 
 ### Backend
 
-| Technology            | Purpose                                        |
-| --------------------- | ---------------------------------------------- |
-| Node.js + Express 5   | Server framework                               |
-| TypeScript 5.9        | End-to-end type safety                         |
-| Prisma 7 + PostgreSQL | ORM and relational database                    |
-| Groq SDK              | LLM API for natural language filter extraction |
-| JSON Web Tokens       | Access + refresh token auth                    |
-| bcryptjs              | Password hashing                               |
-| Zod                   | Request body validation                        |
-| Helmet                | Security headers                               |
-| express-rate-limit    | Rate limiting                                  |
-| cookie-parser         | HTTP-only cookie parsing                       |
+| Technology | Purpose |
+|---|---|
+| Node.js + Express 5 | Server framework |
+| TypeScript 5.9 | End-to-end type safety |
+| Prisma 7 + PostgreSQL | ORM and relational database |
+| Groq SDK | LLM inference for natural language filter extraction |
+| JSON Web Tokens | Access + refresh token auth |
+| bcryptjs | Password hashing (12 salt rounds) |
+| Zod | Request body + env variable validation |
+| Helmet | Security headers |
+| express-rate-limit | Rate limiting on auth endpoints |
+| cookie-parser | httpOnly cookie parsing |
 
 ---
 
 ## 🌐 Pages & Features
 
 ### Home Page — Category Browse
-
-- Displays all product categories in a responsive grid
-- Each category card links to its product listing
+- Responsive category grid fetched from the backend
+- Each card links to its filtered product listing
+- Skeleton loading state for every card
 
 ### Product Listing Page — Browse by Category
-
 - Sidebar filter panel with:
-  - Price range slider
-  - Minimum rating filter
-  - Minimum discount filter
-  - Brand multi-select
+  - Price range (min/max)
+  - Minimum rating
+  - Minimum discount
+  - Brand multi-select (dynamic per category)
   - In-stock toggle
-- All filters are applied client-side (no extra API calls)
-- Dynamic product count badge updates in real-time as filters change
+- All filters applied server-side via query params
+- **Filters persisted in URL** — shareable and survives page refresh
+- Dynamic product count updates as filters change
 
 ### Product Detail Page — Deep Product View
-
 - Image gallery with multiple product images
-- Full product metadata (SKU, weight, dimensions, warranty, shipping info, return policy)
-- Reviews section with ratings and reviewer info
+- Full metadata: SKU, weight, dimensions, warranty, shipping info, return policy
+- Reviews section with star ratings and reviewer info
 - Related tags display
-- Dedicated error and "not found" states
+- Dedicated error, not-found, and skeleton states
+
+### All Products Page — Virtualized Browse
+- Renders the full product catalog using a **custom virtualized grid**
+- Only visible rows are in the DOM — smooth performance regardless of catalog size
+- Pagination support via URL search params
 
 ### Search Modal — AI Search
-
-- Triggered from the header's search icon
-- Locks body scroll while open, closes on backdrop click or Escape
-- Streamed LLM results with skeleton loading
-- Extracted filter tags shown above results
-- Empty state and error states handled
+- Triggered by the search icon or `Ctrl+K` / `Cmd+K`
+- Locks body scroll while open; closes on backdrop click or Escape
+- LLM-extracted filter tags shown above results
+- Cursor-based infinite scroll — loads more results on demand
+- Skeleton loading, empty state, and error states all handled
+- Debounced (300ms) with in-flight request cancellation
 
 ### Login / Register
-
-- Email + password flows with client-side Zod validation
+- Email + password with client-side Zod validation
+- Password strength meter with requirement checklist on register
 - Google OAuth via `@react-oauth/google`
-- Form errors surfaced inline
+- Tab switcher to toggle between Sign In and Create Account
+
+---
+
+## 🔌 API Reference
+
+### Auth — `/api/auth`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/register` | — | Create a new account |
+| `POST` | `/login` | — | Email/password login |
+| `POST` | `/google` | — | Google OAuth login/register |
+| `POST` | `/refresh` | Cookie | Rotate refresh token |
+| `POST` | `/logout` | Cookie | Revoke refresh token |
+| `GET` | `/me` | Bearer | Get current user |
+
+### Products — `/api/products`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/categories` | All categories with formatted names |
+| `GET` | `/search` | Filter products with offset pagination |
+| `GET` | `/:id` | Single product with reviews |
+| `GET` | `/category-metadata` | Brands + price range for a category |
+| `POST` | `/llm-search` | Natural language search with cursor pagination |
 
 ---
 
 ## ⚙️ Architecture Decisions Worth Noting
 
-**Skeleton loading everywhere** — Every data-fetching component has a purpose-built skeleton (`*Skeleton.tsx`). The loading experience is polished and avoids layout shift.
+**Silent token refresh with concurrent request queue** — When multiple API requests expire simultaneously, only one refresh call fires. All other requests wait in a queue and are retried with the new token. No duplicate refresh calls, no race conditions.
 
-**Custom `useFetch` hook** — A thin, reusable data-fetching hook using the native `fetch` API with `AbortController` cleanup, reset-on-URL-change behavior, and typed generic returns.
+**`useInitAuth` for session restoration** — On every page load, the app calls `/auth/refresh` silently. If a valid httpOnly cookie exists, the session is restored without the user ever seeing a login screen. `initStatus` in Redux prevents protected routes from flashing the login page during this check.
 
-**Custom `useSearch` hook** — Wraps the LLM search endpoint with debouncing, request cancellation, and state management so the search modal component stays purely presentational.
+**Custom virtualization without a library** — `VirtualGrid` calculates visible items from first principles using `ResizeObserver` for dynamic row height measurement. No external dependency.
 
-**In-memory metadata cache** — Product categories, brands, and availability statuses are fetched once and cached in memory on the server. This prevents a redundant DB round-trip on every LLM search request.
+**Cursor-based pagination for search** — LLM search uses a cursor (last product ID) rather than offset pagination. This avoids the "skip N rows" performance problem and produces stable results even when the underlying data changes.
 
-**Code-split routing** — All pages are `React.lazy()` wrapped and rendered inside a `<Suspense>` boundary, so each page is a separate JS chunk downloaded only when visited.
+**URL-persisted filters** — Product listing filters live in URL search params, not component state. This makes filter state bookmarkable, shareable, and browser-back-button safe.
 
-**Monorepo with pnpm workspaces** — `client` and `server` are independent packages sharing a single `pnpm-lock.yaml`. Running both dev servers from root requires a single command.
+**Skeleton loading everywhere** — Every data-fetching component has a dedicated skeleton (`*Skeleton.tsx`). Layout shift is eliminated and the loading experience feels intentional.
+
+**Custom `useFetch` hook** — A reusable data-fetching hook using the native `fetch` API with `AbortController` cleanup and typed generic returns. Resets state on URL change to prevent stale data flash.
+
+**In-memory product metadata cache** — Categories, brands, and availability statuses are fetched once from the DB and cached in server memory. Every LLM search call reads from the cache instead of hitting the DB.
+
+**Code-split routing** — All pages are `React.lazy()` wrapped inside a `<Suspense>` boundary. Each page is a separate JS chunk downloaded only when visited.
+
+**Monorepo with pnpm workspaces** — `client` and `server` are independent packages sharing one lockfile. A single `pnpm dev` from root starts both.
 
 ---
 
@@ -176,6 +255,8 @@ model User {
   passwordHash  String?        // null for Google-only accounts
   googleId      String?        @unique
   avatarUrl     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
 }
 
@@ -183,63 +264,65 @@ model RefreshToken {
   id        String   @id @default(cuid())
   tokenHash String   @unique   // raw token is never stored
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   isRevoked Boolean  @default(false)
   userAgent String?
   ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Product {
   id                   Int
   title                String
+  description          String
   category             String
   price                Decimal
   discountPercentage   Decimal
   rating               Float
-  brand                String?
+  stock                Int
   tags                 String[]
+  brand                String?
+  sku                  String    @unique
+  weight               Float
+  dimensions           Json
+  warrantyInformation  String
+  shippingInformation  String
+  availabilityStatus   String
+  returnPolicy         String
+  minimumOrderQuantity Int
+  thumbnail            String
   images               String[]
   reviews              Review[]
-  // + full product metadata fields
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  rating        Int
+  comment       String
+  date          DateTime
+  reviewerName  String
+  reviewerEmail String
+  productId     Int
+  product       Product  @relation(fields: [productId], references: [id])
 }
 ```
-
----
-
-## 🔌 API Reference
-
-### Auth — `/api/auth`
-
-| Method | Endpoint    | Auth   | Description                 |
-| ------ | ----------- | ------ | --------------------------- |
-| `POST` | `/register` | —      | Create a new account        |
-| `POST` | `/login`    | —      | Email/password login        |
-| `POST` | `/google`   | —      | Google OAuth login/register |
-| `POST` | `/refresh`  | Cookie | Rotate refresh token        |
-| `POST` | `/logout`   | Cookie | Revoke refresh token        |
-| `GET`  | `/me`       | Bearer | Get current user            |
-
-### Products — `/api/products`
-
-| Method | Endpoint      | Description                                     |
-| ------ | ------------- | ----------------------------------------------- |
-| `GET`  | `/search`     | Filter products by structured query params      |
-| `POST` | `/llm-search` | Natural language search (LLM filter extraction) |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js 20+
 - pnpm 9+
-- PostgreSQL instance
+- PostgreSQL instance (or [Neon](https://neon.tech) free tier)
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-username/shop-elite.git
+git clone https://github.com/neerajsingh869/shop-elite.git
 cd shop-elite
 pnpm install
 ```
@@ -248,47 +331,54 @@ pnpm install
 
 **Server** — create `server/.env`:
 
-```env
+```
 DATABASE_URL="postgresql://user:password@localhost:5432/shopelite"
-ACCESS_TOKEN_SECRET="your-access-token-secret"
-REFRESH_TOKEN_SECRET="your-refresh-token-secret"
+ACCESS_TOKEN_SECRET="<64-char random hex>"
+REFRESH_TOKEN_SECRET="<different 64-char random hex>"
+ACCESS_TOKEN_EXPIRY="15m"
+REFRESH_TOKEN_EXPIRY="7d"
 GROQ_API_KEY="your-groq-api-key"
 CLIENT_URL="http://localhost:5173"
 PORT=3000
+NODE_ENV="development"
 ```
 
-**Client** — create `client/.env`:
+Generate secrets:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
 
-```env
-VITE_API_URL="http://localhost:3000"
-VITE_GOOGLE_CLIENT_ID="your-google-oauth-client-id"
+**Client** — create `client/.env.local`:
+
+```
+VITE_API_URL=http://localhost:3000
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id
 ```
 
 ### 3. Set Up the Database
 
 ```bash
 cd server
-pnpm prisma migrate dev   # Apply migrations
-pnpm seed                 # Seed product data from DummyJSON API
+npx prisma migrate dev   # Apply migrations
+pnpm seed                # Seed product data from DummyJSON API (~194 products)
 ```
 
 ### 4. Run
 
 ```bash
-# From project root — starts both client and server concurrently
+# From project root — starts both client and server
 pnpm dev
 ```
 
-Client runs at `http://localhost:5173` · Server runs at `http://localhost:3000`
+Client → `http://localhost:5173` · Server → `http://localhost:3000`
 
 ---
 
-## 🗺️ What's Next (Planned)
+## 🗺️ What's Next
 
-- [ ] Product listing page + pagination
-- [ ] All products page `/products` + pagination + virtualization
-- [ ] Product detail page + infinite scroll reviews
-- [ ] Search modal virtualization
-- [ ] Search results page `/search` + infinite scroll
-- [ ] Cart — backend + frontend + Redux + optimistic UI
-- [ ] Orders — backend + frontend
+- [ ] Cart — frontend (Redux) + backend API + optimistic UI
+- [ ] Checkout flow — address, order summary, payment
+- [ ] Razorpay payment integration
+- [ ] Orders — backend + frontend history view
+- [ ] Profile page — update name, avatar, saved addresses
+- [ ] Search results page `/search` with URL-persisted query
