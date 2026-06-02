@@ -20,7 +20,7 @@ function CartItem({ item }: CartItemProps) {
         alt={item.title}
       />
       {/* Item info */}
-      <div className="flex flex-col gap-3 flex-1">
+      <div className="flex flex-col gap-3 flex-1 overflow-hidden">
         <div>
           <h1 className="text-zinc-100 text-sm font-medium truncate">
             {item.title}
