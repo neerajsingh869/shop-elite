@@ -38,7 +38,7 @@ function AboutProduct({ data }: AboutProductProps) {
       {/* Product price info */}
       <div className="flex gap-3 flex-wrap items-end">
         <span className="text-2xl md:text-3xl text-yellow-400 font-bold ">
-          ${data.price}
+          ${Number(data.price).toFixed(2)}
         </span>
         <span className="text-zinc-500 line-through">
           $
