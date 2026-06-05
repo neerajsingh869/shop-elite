@@ -32,21 +32,26 @@ function CartItem({ item }: CartItemProps) {
         <div className="flex justify-between items-center">
           {/* Quantity */}
           <div className="flex gap-2 items-center border border-zinc-800 rounded-md">
-            <Minus
+            <button
               onClick={() =>
                 dispatch(decrementQuantity({ productId: item.productId }))
               }
               className="bg-zinc-800 text-zinc-100 w-6 h-6 p-1.25 rounded-md text-sm cursor-pointer border-none"
-            />
+            >
+              <Minus size={15} />
+            </button>
+
             <span className="text-zinc-100 text-sm font-medium text-center">
               {item.quantity}
             </span>
-            <Plus
+            <button
               onClick={() =>
                 dispatch(incrementQuantity({ productId: item.productId }))
               }
               className="bg-zinc-800 text-zinc-100 w-6 h-6 p-1.25 rounded-md text-sm cursor-pointer border-none"
-            />
+            >
+              <Plus size={15} />
+            </button>
           </div>
           {/* Price */}
           <div className="text-yellow-500 font-bold text-sm">
