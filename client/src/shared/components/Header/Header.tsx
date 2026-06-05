@@ -7,20 +7,31 @@ import {
   selectIsAuthenticated,
   selectUser,
 } from "../../../features/auth/authSelectors";
+import {
+  selectCartCount,
+  selectIsCartOpen,
+} from "../../../features/cart/cartSelectors";
 import SearchBar from "../SearchBar/SearchBar";
-import { useAppSelector } from "../../../store/hook";
 import { useAuth } from "../../../features/auth/hooks";
+import { openCart } from "../../../features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "../../../store/hook";
+import CartDrawer from "../../../features/cart/components/CartDrawer";
 
 function Header() {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
+
   const user = useAppSelector(selectUser);
+  const cartCount = useAppSelector(selectCartCount);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const dispatch = useAppDispatch();
 
   const { logout } = useAuth();
 
-  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
-
   return (
     <>
+      {/* No need to check condition for CartDrawer component, it is already handled in that component */}
+      <CartDrawer />
       <header className="border-b border-b-zinc-800">
         <div className="max-w-7xl flex justify-between items-center mx-auto py-6 px-6 md:px-8">
           <Link to={ROUTES.home} className="text-xl text-yellow-500 font-bold">
@@ -28,7 +39,17 @@ function Header() {
           </Link>
           <div className="flex gap-4 sm:gap-6 md:gap-8 items-center justify-between">
             <SearchBar />
-            <ShoppingCart className="cursor-pointer" size={20} />
+            <div
+              className="relative cursor-pointer"
+              onClick={() => dispatch(openCart())}
+            >
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <div className="bg-yellow-500 rounded-full text-zinc-950 font-semibold text-center w-4 h-4 text-xs absolute right-0 top-0 translate-x-3 -translate-y-3">
+                  {cartCount}
+                </div>
+              )}
+            </div>
             {isAuthenticated && user ? (
               <div className="relative">
                 <button
