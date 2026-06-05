@@ -7,15 +7,12 @@ import {
   selectIsAuthenticated,
   selectUser,
 } from "../../../features/auth/authSelectors";
-import {
-  selectCartCount,
-  selectIsCartOpen,
-} from "../../../features/cart/cartSelectors";
 import SearchBar from "../SearchBar/SearchBar";
 import { useAuth } from "../../../features/auth/hooks";
 import { openCart } from "../../../features/cart/cartSlice";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import CartDrawer from "../../../features/cart/components/CartDrawer";
+import { selectCartCount } from "../../../features/cart/cartSelectors";
 
 function Header() {
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
