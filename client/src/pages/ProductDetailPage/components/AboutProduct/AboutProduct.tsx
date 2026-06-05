@@ -1,14 +1,21 @@
-import { Heart } from "lucide-react";
+import { useState } from "react";
+import { Heart, Minus, Plus } from "lucide-react";
 
+import { useAppDispatch } from "../../../../store/hook";
+import StarSelf from "../../../../shared/components/ui/Star";
+import { addItem, openCart } from "../../../../features/cart/cartSlice";
 import type { ProductDetail } from "../../../../shared/types/api.types";
 import ProductMetadata from "./components/ProductMetadata/ProductMetadata";
-import StarSelf from "../../../../shared/components/ui/Star";
 
 interface AboutProductProps {
   data: ProductDetail;
 }
 
 function AboutProduct({ data }: AboutProductProps) {
+  const [quantity, setQuantity] = useState(1);
+
+  const dispatch = useAppDispatch();
+
   return (
     <>
       {/* Product title & brand */}
@@ -52,10 +59,58 @@ function AboutProduct({ data }: AboutProductProps) {
         </span>
       </div>
       <ProductMetadata data={data} />
+      {/* Quantity */}
+      <div className="flex gap-3 items-center">
+        <span className="text-zinc-500">Qty</span>
+        <div className="flex gap-3 items-center border border-zinc-800 rounded-md">
+          <button
+            onClick={() => setQuantity((quantity) => Math.max(1, quantity - 1))}
+            className="bg-zinc-800 text-zinc-100 w-8 h-8 p-1.25 rounded-md text-sm cursor-pointer border-none"
+          >
+            <Minus size={20} />
+          </button>
+
+          <span className="text-zinc-100 text-sm font-medium text-center">
+            {quantity}
+          </span>
+          <button
+            onClick={() =>
+              setQuantity((quantity) => Math.min(data.stock, quantity + 1))
+            }
+            className="bg-zinc-800 text-zinc-100 w-8 h-8 p-1.25 rounded-md text-sm cursor-pointer border-none"
+          >
+            <Plus size={20} />
+          </button>
+        </div>
+      </div>
       {/* Action buttons */}
       <div className="flex gap-2 self-stretch">
-        <button className="bg-yellow-500 text-black font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400 cursor-pointer">
+        <button
+          onClick={() => {
+            dispatch(
+              addItem({
+                productId: data.id,
+                title: data.title,
+                thumbnail: data.thumbnail,
+                price: Number(data.price),
+                quantity,
+                ...(data.brand && { brand: data.brand }),
+              }),
+            );
+
+            dispatch(openCart());
+          }}
+          className="bg-yellow-500 text-black font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400 cursor-pointer"
+        >
           Add to Cart
+        </button>
+        <button
+          onClick={() => {
+            console.log("purchase now");
+          }}
+          className="border-2 border-yellow-500 text-yellow-500 font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-zinc-900 cursor-pointer"
+        >
+          Purchase Now
         </button>
         <button className="px-4 py-4 border rounded-xl border-zinc-800 hover:border-zinc-600 transition duration-300 hover:-translate-y-0.5">
           <Heart size={20} className="text-zinc-400" />
