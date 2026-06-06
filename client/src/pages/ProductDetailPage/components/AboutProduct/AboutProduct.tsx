@@ -6,6 +6,7 @@ import StarSelf from "../../../../shared/components/ui/Star";
 import { addItem, openCart } from "../../../../features/cart/cartSlice";
 import type { ProductDetail } from "../../../../shared/types/api.types";
 import ProductMetadata from "./components/ProductMetadata/ProductMetadata";
+import CheckoutModal from "../../../../features/cart/components/CheckoutModal";
 
 interface AboutProductProps {
   data: ProductDetail;
@@ -13,11 +14,27 @@ interface AboutProductProps {
 
 function AboutProduct({ data }: AboutProductProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const dispatch = useAppDispatch();
 
   return (
     <>
+      {/* Checkout modal once "Purchase Now" button is clicked */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        items={[
+          {
+            productId: data.id,
+            title: data.title,
+            thumbnail: data.thumbnail,
+            price: Number(data.price),
+            quantity,
+            ...(data.brand && { brand: data.brand }),
+          },
+        ]}
+      />
       {/* Product title & brand */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-zinc-100">
@@ -105,9 +122,7 @@ function AboutProduct({ data }: AboutProductProps) {
           Add to Cart
         </button>
         <button
-          onClick={() => {
-            console.log("purchase now");
-          }}
+          onClick={() => setIsCheckoutOpen(true)}
           className="border-2 border-yellow-500 text-yellow-500 font-semibold text-sm py-4 px-6 rounded-xl grow transition duration-300 hover:-translate-y-0.5 hover:bg-zinc-900 cursor-pointer"
         >
           Purchase Now
