@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Slash, X } from "lucide-react";
 
@@ -13,6 +13,7 @@ function CartDrawer() {
   const isCartOpen = useAppSelector(selectIsCartOpen);
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   if (!isCartOpen) return null;
 
@@ -71,12 +72,15 @@ function CartDrawer() {
                 Add items from the product pages to get started
               </p>
             </div>
-            <Link
-              to="/"
+            <button
+              onClick={() => {
+                navigate("/");
+                dispatch(closeCart());
+              }}
               className="bg-yellow-500 text-zinc-950 font-bold rounded-xl py-3 my-3 cursor-pointer w-1/2"
             >
               Start Shopping
-            </Link>
+            </button>
           </div>
         )}
       </div>
