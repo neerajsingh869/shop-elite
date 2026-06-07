@@ -19,6 +19,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   refreshTokens RefreshToken[] // one user can have many refresh tokens
+  orders        Order[]
 }
 
 model RefreshToken {
@@ -70,4 +71,37 @@ model Review {
   reviewerEmail String
   product       Product  @relation(fields: [productId], references: [id])
   productId     Int
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  razorpayOrderId String      @unique
+  paymentId       String?     @unique
+  totalAmount     Float
+  status          OrderStatus @default(PENDING)
+  email           String
+  phone           String?
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id           String @id @default(cuid())
+  orderId      String
+  order        Order  @relation(fields: [orderId], references: [id])
+  productId    Int
+  title        String
+  thumbnail    String
+  quantity     Int
+  pricePerUnit Float
+  totalPrice   Float
 }
