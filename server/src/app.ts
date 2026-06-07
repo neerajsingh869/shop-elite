@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import { env } from "./config/env.js";
 import authRoutes from "./features/auth/auth.routes.js";
+import ordersRoutes from "./features/orders/orders.routes.js"
 import productRoutes from "./features/products/product.routes.js";
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(express.json({ limit: "10kb" })); // limit prevents huge payloads
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/orders", ordersRoutes);
 app.use("/api/products", productRoutes);
 
 app.get("/health", (_, res) => {
