@@ -6,4 +6,62 @@
     margin: 0;
     padding: 0;
   }
+
+  /*
+    Global focus ring for keyboard users.
+    :focus-visible instead of :focus so mouse clicks don't leave a ring behind,
+    but tabbing always shows where you are (WCAG 2.4.7 Focus Visible).
+  */
+  :focus-visible {
+    outline: 2px solid var(--color-yellow-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /*
+    Respect the OS "reduce motion" setting.
+    We have a lot of transitions, hover:scale and animate-pulse - all of that can
+    trigger nausea/migraine for people with vestibular disorders (WCAG 2.3.3).
+    Not set to 0s because a fully instant change can itself be disorienting.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    *, *:before, *:after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /*
+    Visually hidden but still read by screen readers.
+    Used for skip links, live region messages and labels where the visual design
+    already makes the meaning obvious but the accessibility tree needs the text.
+    display:none / visibility:hidden would remove it from the a11y tree too.
+  */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Same as above, but becomes visible once focused - that's how skip links work */
+  .sr-only-focusable:focus-visible {
+    position: fixed;
+    width: auto;
+    height: auto;
+    padding: 0.75rem 1.25rem;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
 }
