@@ -21,7 +21,7 @@ function ReviewCard({ reviewInfo }: ReviewCardProps) {
         </div>
         <div className="flex flex-col gap-1">
           <span>{reviewInfo.reviewerName}</span>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-zinc-400">
             {reviewInfo.reviewerEmail}
           </span>
         </div>

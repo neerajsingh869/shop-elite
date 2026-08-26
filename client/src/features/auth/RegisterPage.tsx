@@ -94,7 +94,7 @@ function RegisterPage() {
           <h1 className="text-2xl font-semibold text-zinc-100">
             Create account
           </h1>
-          <p className="text-zinc-500 text-sm">
+          <p className="text-zinc-400 text-sm">
             Start your ShopElite membership today
           </p>
         </div>
@@ -112,7 +112,7 @@ function RegisterPage() {
         </button>
         <div className="flex justify-between gap-1 text-sm items-center">
           <span className="border grow h-0 border-zinc-800"></span>
-          <span className="text-zinc-500">or</span>
+          <span className="text-zinc-400">or</span>
           <span className="border grow h-0 border-zinc-800"></span>
         </div>
         {/* Server error */}
@@ -328,7 +328,7 @@ function RegisterPage() {
             {isSubmitting ? "Signing up..." : "Create account"}
           </button>
         </form>
-        <p className="text-center text-sm text-zinc-500 tracking-tight">
+        <p className="text-center text-sm text-zinc-400 tracking-tight">
           Already have an account?{" "}
           <Link to={"/login"} className="text-yellow-500 cursor-pointer">
             Sign in

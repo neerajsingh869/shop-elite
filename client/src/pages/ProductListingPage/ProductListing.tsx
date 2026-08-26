@@ -144,7 +144,7 @@ function ProductListingPage() {
               <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100 text-center">
                 No products found
               </span>
-              <span className="text-zinc-500 text-sm lg:text-base text-center">
+              <span className="text-zinc-400 text-sm lg:text-base text-center">
                 Use fewer filters or{" "}
                 <button
                   onClick={() => setSearchParams({})}

@@ -36,7 +36,7 @@ function ProductCard({ product, categorySlug, source }: ProductCardProps) {
             <span className="text-sm font-bold text-yellow-400">
               ${Number(product.price).toFixed(2)}
             </span>
-            <span className="text-xs text-zinc-500 flex items-center gap-1">
+            <span className="text-xs text-zinc-400 flex items-center gap-1">
               <Star
                 size={10}
                 fill="oklch(79.5% 0.184 86.047)"

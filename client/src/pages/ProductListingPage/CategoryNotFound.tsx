@@ -15,7 +15,7 @@ function CategoryNotFound({ categoryName }: CategoryNotFoundProps) {
         <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100">
           No products found
         </span>
-        <span className="text-zinc-500 text-sm lg:text-base text-center">
+        <span className="text-zinc-400 text-sm lg:text-base text-center">
           {`No products found in "${categoryName}" category`}
         </span>
       </div>
