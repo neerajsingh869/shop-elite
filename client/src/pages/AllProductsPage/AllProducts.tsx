@@ -6,6 +6,7 @@ import type { ProductResponse } from "../../shared/types/api.types";
 import ProductListingGridSkeleton from "../ProductListingPage/components/ProductGrid/ProductGridSkeleton";
 import BackButton from "../../shared/components/ui/BackButton";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 import ProductCard from "../ProductListingPage/components/ProductGrid/components/ProductCard/ProductCard";
 import VirtualGrid from "../../shared/components/VirtualGrid/VirtualGrid";
 
@@ -19,6 +20,8 @@ function AllProducts() {
     ),
   );
   const { topRef } = useScrollToTop(loading);
+
+  useDocumentTitle("All Products");
 
   return (
     <>

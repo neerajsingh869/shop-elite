@@ -5,7 +5,7 @@ function AboutProductSkeleton() {
     <>
       {/* Product title & brand */}
       <div>
-        <h1 className="animate-pulse bg-neutral-900 h-10 w-64 rounded-lg"></h1>
+        <div className="animate-pulse bg-neutral-900 h-10 w-64 rounded-lg"></div>
         <p className="mt-1 animate-pulse bg-neutral-900 h-3 w-32 rounded-lg"></p>
       </div>
       {/* Product reviews */}

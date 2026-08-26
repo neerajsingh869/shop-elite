@@ -11,7 +11,7 @@ function ReviewMetadataTitle({
 }: ReviewMetadataTitleProps) {
   return (
     <div>
-      <h1 className="text-zinc-100 text-xl">Customer Reviews</h1>
+      <h2 className="text-zinc-100 text-xl">Customer Reviews</h2>
       <div className="py-1 flex gap-3 items-center w-full">
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((num) => {

@@ -1,7 +1,10 @@
 import { ROUTES } from "../shared/constants";
 import BackButton from "../shared/components/ui/BackButton";
+import useDocumentTitle from "../shared/hooks/useDocumentTitle";
 
 function NotFoundPage() {
+  useDocumentTitle("Page not found");
+
   return (
     <div className="flex flex-col justify-center items-center min-h-[70vh] gap-4">
       <div className="flex flex-col items-center">
