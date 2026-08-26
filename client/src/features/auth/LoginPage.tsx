@@ -210,7 +210,7 @@ function LoginPage() {
         </form>
         <p className="text-center text-sm text-zinc-400 tracking-tight">
           Don't have an account?{" "}
-          <Link to={"/register"} className="text-yellow-500 cursor-pointer">
+          <Link to={"/register"} className="text-yellow-500 cursor-pointer underline">
             Create one
           </Link>
         </p>

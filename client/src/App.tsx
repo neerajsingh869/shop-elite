@@ -1,7 +1,6 @@
 import { BrowserRouter } from "react-router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-import "./App.css";
 import { store } from "./store";
 import { Provider } from "react-redux";
 import AppRoutes from "./routes/routes";

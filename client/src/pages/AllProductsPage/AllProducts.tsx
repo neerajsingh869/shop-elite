@@ -20,13 +20,12 @@ function AllProducts() {
       Number(searchParams.get("limit") ?? 100),
     ),
   );
-  const { topRef } = useScrollToTop(loading);
+  useScrollToTop(loading);
 
   useDocumentTitle("All Products");
 
   return (
     <>
-      <div className="absolute top-0" ref={topRef}></div>
       <BackButton to={ROUTES.home} label="All Categories" />
       <header className="mb-6">
         <p className="text-xs text-yellow-500 uppercase tracking-widest mb-1">

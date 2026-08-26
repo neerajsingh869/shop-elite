@@ -40,9 +40,19 @@ function VirtualGrid<T>({ items, renderItem, gap = 16 }: VirtualGridProps<T>) {
       columns,
     });
   }, [items, scrollTop, containerHeight, rowHeight, gap, columns]);
-  console.log(rowHeight);
 
   return (
+    <>
+      {/*
+        Only the rows in view are in the DOM, so a screen reader - and browser
+        find in page - sees a fraction of the list. You cannot have both
+        virtualization and a complete DOM, so at least make the real total
+        available instead of silently under reporting it.
+        Deliberately not a live region: it would fire on every scroll tick.
+      */}
+      <span className="sr-only">
+        Showing {visibleItems.length} of {items.length} products
+      </span>
     <div
       className="overflow-y-auto"
       style={{ height: containerHeight }}
@@ -75,6 +85,7 @@ function VirtualGrid<T>({ items, renderItem, gap = 16 }: VirtualGridProps<T>) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
