@@ -13,10 +13,11 @@ function DiscountFilter({
   setSearchParams,
 }: DiscountFilterProps) {
   return (
-    <section>
+    <section aria-labelledby="filter-discounts">
       <header className="flex justify-between items-center mb-3">
-        <FilterTitle title="Discounts (in %)" />
+        <FilterTitle id="filter-discounts" title="Discounts (in %)" />
         <ResetButton
+          label="Reset discount filter"
           resetFilter={() =>
             setSearchParams((prev) => {
               const next = new URLSearchParams(prev);
@@ -29,30 +30,32 @@ function DiscountFilter({
           }
         />
       </header>
-      {[70, 50, 30, 10].map((discountValue) => (
-        <div key={discountValue} className="flex items-center gap-2 py-1">
-          <input
-            id={`discount-${discountValue}+`}
-            type="radio"
-            checked={Number(searchParams.get("minDiscount")) === discountValue}
-            onChange={() => {
-              setSearchParams((prev) => {
-                const next = new URLSearchParams(prev);
-                next.set("minDiscount", String(discountValue));
-                return next;
-              });
-            }}
-            value={discountValue}
-            className="accent-yellow-500 cursor-pointer w-3.5 h-3.5"
-          />
-          <label
-            htmlFor={`discount-${discountValue}+`}
-            className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors cursor-pointer"
-          >
-            {discountValue}% & up
-          </label>
-        </div>
-      ))}
+      <div role="radiogroup" aria-labelledby="filter-discounts">
+        {[70, 50, 30, 10].map((discountValue) => (
+          <div key={discountValue} className="flex items-center gap-2 py-1">
+            <input
+              id={`discount-${discountValue}+`}
+              type="radio"
+              checked={Number(searchParams.get("minDiscount")) === discountValue}
+              onChange={() => {
+                setSearchParams((prev) => {
+                  const next = new URLSearchParams(prev);
+                  next.set("minDiscount", String(discountValue));
+                  return next;
+                });
+              }}
+              value={discountValue}
+              className="accent-yellow-500 cursor-pointer w-3.5 h-3.5"
+            />
+            <label
+              htmlFor={`discount-${discountValue}+`}
+              className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors cursor-pointer"
+            >
+              {discountValue}% & up
+            </label>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

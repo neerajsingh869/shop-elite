@@ -15,10 +15,11 @@ function BrandFilter({
   setSearchParams,
 }: BrandFilterProps) {
   return (
-    <section>
+    <section aria-labelledby="filter-brands">
       <header className="flex justify-between items-center mb-3">
-        <FilterTitle title="Brands" />
+        <FilterTitle id="filter-brands" title="Brands" />
         <ResetButton
+          label="Reset brand filter"
           resetFilter={() =>
             setSearchParams((prev) => {
               const next = new URLSearchParams(prev);

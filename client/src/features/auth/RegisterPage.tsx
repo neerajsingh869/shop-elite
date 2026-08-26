@@ -118,6 +118,7 @@ function RegisterPage() {
         {/* Server error */}
         {serverError && (
           <div
+            role="alert"
             className="flex items-start gap-2.5 p-2.5
             bg-red-950/50 border border-red-900/50 rounded-lg"
           >
@@ -133,19 +134,36 @@ function RegisterPage() {
             <div className="relative flex items-center">
               <User
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="name"
                 type="text"
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="Danny Johnson"
+                aria-invalid={errors.name ? true : undefined}
+                aria-describedby={errors.name ? "name-error" : undefined}
                 {...register("name")}
               />
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.name?.message}
-            </p>
+            {errors.name && (
+
+              <p
+
+                id="name-error"
+
+                role="alert"
+
+                className="mt-1.5 text-xs text-red-400"
+
+              >
+
+                {errors.name.message}
+
+              </p>
+
+            )}
           </div>
           <div className="flex flex-col gap-1.25">
             <label className="text-zinc-400 text-xs" htmlFor="email">
@@ -154,19 +172,36 @@ function RegisterPage() {
             <div className="relative flex items-center">
               <Mail
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="email"
                 type="email"
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="you@example.com"
+                aria-invalid={errors.email ? true : undefined}
+                aria-describedby={errors.email ? "email-error" : undefined}
                 {...register("email")}
               />
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.email?.message}
-            </p>
+            {errors.email && (
+
+              <p
+
+                id="email-error"
+
+                role="alert"
+
+                className="mt-1.5 text-xs text-red-400"
+
+              >
+
+                {errors.email.message}
+
+              </p>
+
+            )}
           </div>
           <div className="flex flex-col gap-1.25">
             <label className="text-zinc-400 text-xs" htmlFor="password">
@@ -175,32 +210,56 @@ function RegisterPage() {
             <div className="relative flex items-center">
               <Lock
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="••••••••••••"
+                aria-invalid={errors.password ? true : undefined}
+                aria-describedby={errors.password ? "password-error" : undefined}
                 {...register("password")}
               />
-              <button onClick={() => setShowPassword((v) => !v)} type="button">
+              <button
+                onClick={() => setShowPassword((v) => !v)}
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
                 {showPassword ? (
                   <Eye
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 ) : (
                   <EyeOff
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 )}
               </button>
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.password?.message}
-            </p>
+            {errors.password && (
+
+              <p
+
+                id="password-error"
+
+                role="alert"
+
+                className="mt-1.5 text-xs text-red-400"
+
+              >
+
+                {errors.password.message}
+
+              </p>
+
+            )}
           </div>
           <div className="flex flex-col gap-1.25">
             <label className="text-zinc-400 text-xs" htmlFor="confirm-password">
@@ -209,32 +268,58 @@ function RegisterPage() {
             <div className="relative flex items-center">
               <Lock
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="confirm-password"
                 type={showConfirm ? "text" : "password"}
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="••••••••••••"
+                aria-invalid={errors.confirmPassword ? true : undefined}
+                aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
                 {...register("confirmPassword")}
               />
-              <button onClick={() => setShowConfirm((v) => !v)} type="button">
+              <button
+                onClick={() => setShowConfirm((v) => !v)}
+                type="button"
+                aria-label={
+                  showConfirm ? "Hide confirm password" : "Show confirm password"
+                }
+                aria-pressed={showConfirm}
+              >
                 {showConfirm ? (
                   <Eye
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 ) : (
                   <EyeOff
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 )}
               </button>
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.confirmPassword?.message}
-            </p>
+            {errors.confirmPassword && (
+
+              <p
+
+                id="confirm-password-error"
+
+                role="alert"
+
+                className="mt-1.5 text-xs text-red-400"
+
+              >
+
+                {errors.confirmPassword.message}
+
+              </p>
+
+            )}
           </div>
           <button
             disabled={isSubmitting}

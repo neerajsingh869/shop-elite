@@ -13,10 +13,11 @@ function AvailabilityFilter({
   setSearchParams,
 }: AvailabilityFilterProps) {
   return (
-    <section>
+    <section aria-labelledby="filter-availability">
       <header className="flex justify-between items-center mb-3">
-        <FilterTitle title="Availability" />
+        <FilterTitle id="filter-availability" title="Availability" />
         <ResetButton
+          label="Reset availability filter"
           resetFilter={() =>
             setSearchParams((prev) => {
               const next = new URLSearchParams(prev);
