@@ -27,32 +27,40 @@ function CartItem({ item }: CartItemProps) {
           <h3 className="text-zinc-100 text-sm font-medium truncate">
             {item.title}
           </h3>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-400">
             by <span className="text-zinc-400">{item.brand ?? "Unknown"}</span>
           </p>
         </div>
         <div className="flex justify-between items-center">
-          {/* Quantity */}
+          {/*
+            Quantity. Every label repeats the product title because the cart
+            has several of these - "Increase quantity" on its own tells a
+            screen reader user nothing about which row they are on.
+          */}
           <div className="flex gap-2 items-center border border-zinc-800 rounded-md">
             <button
               onClick={() =>
                 dispatch(decrementQuantity({ productId: item.productId }))
               }
+              aria-label={`Decrease quantity of ${item.title}`}
               className="bg-zinc-800 text-zinc-100 w-6 h-6 p-1.25 rounded-md text-sm cursor-pointer border-none"
             >
-              <Minus size={15} />
+              <Minus size={15} aria-hidden="true" />
             </button>
 
             <span className="text-zinc-100 text-sm font-medium text-center">
+              {/* reads as "Quantity: 2" instead of a bare number */}
+              <span className="sr-only">Quantity:</span>
               {item.quantity}
             </span>
             <button
               onClick={() =>
                 dispatch(incrementQuantity({ productId: item.productId }))
               }
+              aria-label={`Increase quantity of ${item.title}`}
               className="bg-zinc-800 text-zinc-100 w-6 h-6 p-1.25 rounded-md text-sm cursor-pointer border-none"
             >
-              <Plus size={15} />
+              <Plus size={15} aria-hidden="true" />
             </button>
           </div>
           {/* Price */}
@@ -61,11 +69,20 @@ function CartItem({ item }: CartItemProps) {
           </div>
         </div>
       </div>
-      {/* Trash */}
-      <Trash2
+      {/*
+        Was a bare <Trash2 onClick> svg - no role, no name, and impossible to
+        reach with a keyboard because svg is not in the tab order.
+      */}
+      <button
         onClick={() => dispatch(removeItem({ productId: item.productId }))}
-        className="text-zinc-500 hover:text-red-400 w-5 h-5 cursor-pointer transition-colors self-start"
-      />
+        aria-label={`Remove ${item.title} from cart`}
+        className="self-start rounded-md cursor-pointer"
+      >
+        <Trash2
+          aria-hidden="true"
+          className="text-zinc-400 hover:text-red-400 w-5 h-5 transition-colors"
+        />
+      </button>
     </div>
   );
 }

@@ -13,6 +13,7 @@ import useScrollToTop from "../../shared/hooks/useScrollToTop";
 import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 import ProductGrid from "./components/ProductGrid/ProductGrid";
 import BackButton from "../../shared/components/ui/BackButton";
+import Pagination from "../../shared/components/ui/Pagination";
 import getCategoryName from "../../shared/utils/getCategoryName";
 import {
   buildCategoryMetadataURL,
@@ -131,27 +132,11 @@ function ProductListingPage() {
               categorySlug={categorySlug!}
               source="PRODUCT_LISTING"
             />
-            <div className="flex justify-center gap-2 mt-3">
-              {productResponse.data.totalPages &&
-                productResponse.data.totalPages > 1 &&
-                Array.from({ length: productResponse.data.totalPages }).map(
-                  (_, index) => (
-                    <button
-                      key={index}
-                      className="cursor-pointer text-emerald-400 bg-emerald-900/20 border border-emerald-800/40 rounded text font-semibold px-2.5 py-0.5"
-                      onClick={() =>
-                        setSearchParams((prev) => {
-                          const next = new URLSearchParams(prev);
-                          next.set("page", String(index + 1));
-                          return next;
-                        })
-                      }
-                    >
-                      {index + 1}
-                    </button>
-                  ),
-                )}
-            </div>
+            <Pagination
+              totalPages={productResponse.data.totalPages ?? 0}
+              currentPage={Number(searchParams.get("page") ?? 1)}
+              setSearchParams={setSearchParams}
+            />
           </div>
         ) : (
           <div className="mt-32 mx-auto">
