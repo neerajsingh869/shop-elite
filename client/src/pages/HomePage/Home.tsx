@@ -38,7 +38,9 @@ function HomePage() {
       {loading ? (
         <CategoryGridSkeleton />
       ) : error ? (
-        <div className="text-red-400 text-sm">Error: {error}</div>
+        <div role="alert" className="text-red-400 text-sm">
+            Error: {error}
+          </div>
       ) : (
         data && (
           <>

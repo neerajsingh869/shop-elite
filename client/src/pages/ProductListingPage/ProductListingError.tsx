@@ -5,7 +5,10 @@ interface ProductListingErrorProps {
 
 function ProductListingError({ message, onRetry }: ProductListingErrorProps) {
   return (
-    <div className="flex flex-col justify-center items-center min-h-[70vh] gap-4">
+    <div
+      role="alert"
+      className="flex flex-col justify-center items-center min-h-[70vh] gap-4"
+    >
       <div className="flex flex-col items-center">
         <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100">
           Something went wrong

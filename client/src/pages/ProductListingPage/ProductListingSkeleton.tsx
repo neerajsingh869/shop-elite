@@ -4,6 +4,10 @@ import ProductListingGridSkeleton from "./components/ProductGrid/ProductGridSkel
 function ProductListingPageSkeleton() {
   return (
     <>
+      <span className="sr-only" role="status">
+        Loading category…
+      </span>
+      <div aria-hidden="true">
       <BackButtonSkeleton />
       <header className="mb-6">
         <p className="mb-1 animate-pulse bg-neutral-900 h-6 w-28 rounded-lg"></p>
@@ -17,6 +21,7 @@ function ProductListingPageSkeleton() {
         <div>
           <ProductListingGridSkeleton />
         </div>
+      </div>
       </div>
     </>
   );
