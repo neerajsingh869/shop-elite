@@ -44,7 +44,9 @@ function AllProducts() {
       {loading ? (
         <ProductListingGridSkeleton />
       ) : error ? (
-        <div>Error : {error}</div>
+        <div role="alert" className="text-red-400 text-sm">
+          Error : {error}
+        </div>
       ) : data && data.total ? (
         <div>
           <VirtualGrid

@@ -6,6 +6,10 @@ import BackButtonSkeleton from "../../shared/components/ui/BackButtonSkeleton";
 function ProductDetailPageSkeleton() {
   return (
     <>
+      <span className="sr-only" role="status">
+        Loading product…
+      </span>
+      <div aria-hidden="true">
       <BackButtonSkeleton />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <ImageGallarySkeleton />
@@ -15,6 +19,7 @@ function ProductDetailPageSkeleton() {
         </div>
       </div>
       <ReviewsSkeleton />
+      </div>
     </>
   );
 }

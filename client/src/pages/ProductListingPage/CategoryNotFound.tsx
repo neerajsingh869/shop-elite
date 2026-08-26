@@ -7,7 +7,10 @@ interface CategoryNotFoundProps {
 
 function CategoryNotFound({ categoryName }: CategoryNotFoundProps) {
   return (
-    <div className="flex flex-col justify-center items-center min-h-[70vh] gap-4">
+    <div
+      role="status"
+      className="flex flex-col justify-center items-center min-h-[70vh] gap-4"
+    >
       <div className="flex flex-col items-center">
         <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100">
           No products found
