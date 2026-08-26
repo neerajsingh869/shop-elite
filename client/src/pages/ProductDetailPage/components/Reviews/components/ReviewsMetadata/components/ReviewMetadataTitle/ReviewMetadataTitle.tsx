@@ -22,7 +22,7 @@ function ReviewMetadataTitle({
           })}
         </div>
         <span className="text-zinc-100 text-sm font-bold">{totalRating}</span>
-        <span className="text-sm text-zinc-500">{reviewsCount} reviews</span>
+        <span className="text-sm text-zinc-400">{reviewsCount} reviews</span>
       </div>
     </div>
   );

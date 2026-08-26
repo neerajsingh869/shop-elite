@@ -13,7 +13,7 @@ function ProductListingError({ message, onRetry }: ProductListingErrorProps) {
         <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100">
           Something went wrong
         </span>
-        <span className="text-zinc-500 text-sm lg:text-base text-center">
+        <span className="text-zinc-400 text-sm lg:text-base text-center">
           Error: {message}
         </span>
       </div>

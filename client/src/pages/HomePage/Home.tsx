@@ -28,7 +28,7 @@ function HomePage() {
         {loading ? (
           <p className="h-3 w-64 bg-zinc-800 rounded animate-pulse mt-2"></p>
         ) : (
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-sm text-zinc-400 mt-1">
             {data?.length} categories{" "}
             <Dot className="cursor-text inline -mx-2" /> Over 200 premium
             products
@@ -48,7 +48,7 @@ function HomePage() {
             <div className="mt-6 flex justify-center">
               <Link
                 to="/products"
-                className="cursor-pointer text-center font-bold text-zinc-500 text-xl underline"
+                className="cursor-pointer text-center font-bold text-zinc-400 text-xl underline"
               >
                 Browse all products
               </Link>

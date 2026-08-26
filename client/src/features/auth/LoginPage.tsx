@@ -78,7 +78,7 @@ function LoginPage() {
       <div className="flex flex-col gap-6 w-84">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-100">Welcome back</h1>
-          <p className="text-zinc-500 text-sm">
+          <p className="text-zinc-400 text-sm">
             Sign in to your account to continue
           </p>
         </div>
@@ -98,7 +98,7 @@ function LoginPage() {
         </button>
         <div className="flex justify-between gap-1 text-sm items-center">
           <span className="border grow h-0 border-zinc-800"></span>
-          <span className="text-zinc-500">or</span>
+          <span className="text-zinc-400">or</span>
           <span className="border grow h-0 border-zinc-800"></span>
         </div>
         {/* Server error */}
@@ -208,7 +208,7 @@ function LoginPage() {
             {isSubmitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
-        <p className="text-center text-sm text-zinc-500 tracking-tight">
+        <p className="text-center text-sm text-zinc-400 tracking-tight">
           Don't have an account?{" "}
           <Link to={"/register"} className="text-yellow-500 cursor-pointer">
             Create one

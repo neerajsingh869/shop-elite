@@ -13,13 +13,13 @@ function CartSummary({ onCheckout }: CartSummaryProps) {
       {/* Subtotal & Other costs */}
       <div className="flex flex-col gap-0.5">
         <div className="flex justify-between">
-          <p className="text-zinc-500 text-sm">Subtotal</p>
+          <p className="text-zinc-400 text-sm">Subtotal</p>
           <p className="text-zinc-100 text-sm">
             ${cartTotal.toLocaleString("en-US")}
           </p>
         </div>
         <div className="flex justify-between">
-          <p className="text-zinc-500 text-sm">Delivery</p>
+          <p className="text-zinc-400 text-sm">Delivery</p>
           <p className="text-emerald-400 text-xs">Free</p>
         </div>
       </div>

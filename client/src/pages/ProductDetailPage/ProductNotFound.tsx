@@ -15,7 +15,7 @@ function ProductNotFound({ categorySlug }: ProductNotFoundProps) {
         <span className="text-xl md:text-2xl lg:text-3xl font-bold text-zinc-100">
           Product not found
         </span>
-        <span className="text-zinc-500 text-sm lg:text-base text-center">
+        <span className="text-zinc-400 text-sm lg:text-base text-center">
           This product does not exist or has been removed.
         </span>
       </div>

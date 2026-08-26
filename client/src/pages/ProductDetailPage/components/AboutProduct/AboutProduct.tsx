@@ -40,7 +40,7 @@ function AboutProduct({ data }: AboutProductProps) {
         <h1 className="text-2xl md:text-3xl font-bold text-zinc-100">
           {data.title}
         </h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm text-zinc-400 mt-1">
           by <span className="text-zinc-400">{data.brand ?? "Unknown"}</span>
         </p>
       </div>
@@ -69,7 +69,7 @@ function AboutProduct({ data }: AboutProductProps) {
         <span className="text-2xl md:text-3xl text-yellow-400 font-bold ">
           ${Number(data.price).toFixed(2)}
         </span>
-        <span className="text-zinc-500 line-through">
+        <span className="text-zinc-400 line-through">
           $
           {(
             Number(data.price) /

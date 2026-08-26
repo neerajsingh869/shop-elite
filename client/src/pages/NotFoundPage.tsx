@@ -11,7 +11,7 @@ function NotFoundPage() {
         <span className="text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-100">
           404
         </span>
-        <span className="text-zinc-500 text-base lg:text-lg text-center">
+        <span className="text-zinc-400 text-base lg:text-lg text-center">
           This page could not be found.
         </span>
       </div>
