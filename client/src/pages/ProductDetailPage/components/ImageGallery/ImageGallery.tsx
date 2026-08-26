@@ -12,14 +12,15 @@ function ImageGallery({ images, title }: ImageGalleryProps) {
     <div className="flex flex-col gap-3">
       <div className="group aspect-square bg-neutral-900 rounded-2xl border-zinc-800 border p-8">
         {/*
-          Informative image, so it needs a real alt. The index is in there
+          Informative image, so it needs a real alt. The position is in there
           because the alt changes as you click through the thumbnails and
           "which one am I looking at" is otherwise invisible.
+          No "image"/"photo" in the text - a screen reader already says "image".
         */}
         <img
           className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
           src={images[currentImageIndex]}
-          alt={`${title} - image ${currentImageIndex + 1} of ${images.length}`}
+          alt={`${title}, ${currentImageIndex + 1} of ${images.length}`}
         />
       </div>
       <div className="flex flex-wrap gap-2">
