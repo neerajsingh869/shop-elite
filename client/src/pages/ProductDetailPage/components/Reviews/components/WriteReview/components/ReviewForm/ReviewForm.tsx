@@ -56,62 +56,95 @@ function ReviewForm({ addReview }: ReviewFormProps) {
       className="flex flex-col gap-4 items-start"
       onSubmit={(e) => handleReviewFormSubmit(e)}
     >
-      <div className="flex flex-col gap-2 w-full">
-        <label htmlFor="rating-input" className="text-sm text-zinc-400">
-          Rating <span className="text-xs text-zinc-500">(required)</span>
-        </label>
+      {/*
+        This used to be five <svg onClick> with a label pointing at a div -
+        invalid, and completely unusable without a mouse. Native radios in a
+        fieldset give us arrow key navigation, Space to select, a group name
+        from the legend and the required/invalid states, all for free.
+        The inputs are sr-only rather than hidden so they stay focusable.
+      */}
+      <fieldset className="flex flex-col gap-2 w-full">
+        <legend className="text-sm text-zinc-400 mb-2">
+          Rating <span className="text-xs text-zinc-400">(required)</span>
+        </legend>
         <div className="flex gap-4 items-center">
-          <div id="rating-input" className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((num) => {
-              if (num <= Math.max(reviewStarsActive, reviewStarsSelected)) {
-                return (
-                  <StarSelf
-                    key={num}
-                    size={6}
-                    filled={true}
-                    onMouseEnter={() => setReviewStarsActive(num)}
-                    onMouseLeave={() => setReviewStarsActive(0)}
-                    onClick={() => setReviewStarsSelected(num)}
-                  />
-                );
-              }
-              return (
-                <StarSelf
-                  key={num}
-                  size={6}
-                  filled={false}
-                  onMouseEnter={() => setReviewStarsActive(num)}
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <label
+                key={num}
+                onMouseEnter={() => setReviewStarsActive(num)}
+                onMouseLeave={() => setReviewStarsActive(0)}
+                className="cursor-pointer rounded has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-yellow-500 has-[:focus-visible]:outline-offset-2"
+              >
+                <input
+                  type="radio"
+                  name="rating"
+                  value={num}
+                  checked={reviewStarsSelected === num}
+                  onChange={() => {
+                    setReviewStarsSelected(num);
+                    setReviewStarsSelectedError("");
+                  }}
+                  aria-invalid={reviewStarsSelectedError ? true : undefined}
+                  aria-describedby={
+                    reviewStarsSelectedError ? "rating-error" : undefined
+                  }
+                  className="sr-only"
                 />
-              );
-            })}
+                <span className="sr-only">
+                  {num} star{num > 1 ? "s" : ""}
+                </span>
+                <StarSelf
+                  size={6}
+                  filled={
+                    num <= Math.max(reviewStarsActive, reviewStarsSelected)
+                  }
+                />
+              </label>
+            ))}
           </div>
-          <Delete
-            size={24}
-            className="text-red-400 cursor-pointer"
-            strokeWidth={1.5}
+          <button
+            type="button"
             onClick={() => setReviewStarsSelected(0)}
-          />
+            aria-label="Clear rating"
+            className="rounded cursor-pointer"
+          >
+            <Delete
+              size={24}
+              aria-hidden="true"
+              className="text-red-400"
+              strokeWidth={1.5}
+            />
+          </button>
         </div>
         {reviewStarsSelectedError && (
-          <span className="text-red-400 text-xs">
+          // role="alert" so the message is spoken when it appears - otherwise
+          // a screen reader user submits and hears nothing at all
+          <span id="rating-error" role="alert" className="text-red-400 text-xs">
             Error: {reviewStarsSelectedError}
           </span>
         )}
-      </div>
+      </fieldset>
       <div className="flex flex-col gap-2 w-full">
         <label htmlFor="review-input" className="text-sm text-zinc-400">
-          Write a review{" "}
-          <span className="text-xs text-zinc-500">(required)</span>
+          Write a review <span className="text-xs text-zinc-400">(required)</span>
         </label>
         <textarea
           id="review-input"
           rows={4}
           className="border border-zinc-800 rounded-md p-2"
           value={reviewDescription}
-          onChange={(e) => setReviewDescription(e.target.value)}
+          onChange={(e) => {
+            setReviewDescription(e.target.value);
+            if (e.target.value.trim()) setReviewDescriptionError("");
+          }}
+          aria-invalid={reviewDescriptionError ? true : undefined}
+          aria-describedby={
+            reviewDescriptionError ? "review-error" : undefined
+          }
         ></textarea>
         {reviewDescriptionError && (
-          <span className="text-red-400 text-xs">
+          <span id="review-error" role="alert" className="text-red-400 text-xs">
             Error: {reviewDescriptionError}
           </span>
         )}

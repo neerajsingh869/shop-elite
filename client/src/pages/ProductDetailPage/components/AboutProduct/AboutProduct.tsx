@@ -54,8 +54,13 @@ function AboutProduct({ data }: AboutProductProps) {
             return <StarSelf key={num} size={3} filled={false} />;
           })}
         </div>
-        <span className="text-zinc-100 text-sm font-bold">{data.rating}</span>
-        <span className="text-sm text-zinc-500">
+        {/* stars are aria-hidden, so the number carries the meaning here */}
+        <span className="text-zinc-100 text-sm font-bold">
+          <span className="sr-only">Rated </span>
+          {data.rating}
+          <span className="sr-only"> out of 5</span>
+        </span>
+        <span className="text-sm text-zinc-400">
           {data.reviews.length} reviews
         </span>
       </div>
@@ -78,25 +83,30 @@ function AboutProduct({ data }: AboutProductProps) {
       <ProductMetadata data={data} />
       {/* Quantity */}
       <div className="flex gap-3 items-center">
-        <span className="text-zinc-500">Qty</span>
+        <span className="text-zinc-400" aria-hidden="true">
+          Qty
+        </span>
         <div className="flex gap-3 items-center border border-zinc-800 rounded-md">
           <button
             onClick={() => setQuantity((quantity) => Math.max(1, quantity - 1))}
+            aria-label="Decrease quantity"
             className="bg-zinc-800 text-zinc-100 w-8 h-8 p-1.25 rounded-md text-sm cursor-pointer border-none"
           >
-            <Minus size={20} />
+            <Minus size={20} aria-hidden="true" />
           </button>
 
           <span className="text-zinc-100 text-sm font-medium text-center">
+            <span className="sr-only">Quantity:</span>
             {quantity}
           </span>
           <button
             onClick={() =>
               setQuantity((quantity) => Math.min(data.stock, quantity + 1))
             }
+            aria-label="Increase quantity"
             className="bg-zinc-800 text-zinc-100 w-8 h-8 p-1.25 rounded-md text-sm cursor-pointer border-none"
           >
-            <Plus size={20} />
+            <Plus size={20} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -127,8 +137,11 @@ function AboutProduct({ data }: AboutProductProps) {
         >
           Purchase Now
         </button>
-        <button className="px-4 py-4 border rounded-xl border-zinc-800 hover:border-zinc-600 transition duration-300 hover:-translate-y-0.5">
-          <Heart size={20} className="text-zinc-400" />
+        <button
+          aria-label={`Add ${data.title} to wishlist`}
+          className="px-4 py-4 border rounded-xl border-zinc-800 hover:border-zinc-600 transition duration-300 hover:-translate-y-0.5 cursor-pointer"
+        >
+          <Heart size={20} aria-hidden="true" className="text-zinc-400" />
         </button>
       </div>
     </>

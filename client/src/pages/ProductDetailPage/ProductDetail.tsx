@@ -59,7 +59,7 @@ function ProductDetailPage() {
       <BackButton label="Go Back" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image gallery */}
-        <ImageGallery images={data.images} />
+        <ImageGallery images={data.images} title={data.title} />
         <div className="flex flex-col gap-5 items-start">
           {/* Link to go to product listing page for the category */}
           <Link
