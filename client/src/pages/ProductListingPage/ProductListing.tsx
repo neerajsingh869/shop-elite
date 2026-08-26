@@ -75,7 +75,7 @@ function ProductListingPage() {
     buildCategoryMetadataURL(categorySlug!),
   );
 
-  const { topRef } = useScrollToTop(productResponse.loading);
+  useScrollToTop(productResponse.loading);
 
   const categoryName = getCategoryName(categorySlug);
 
@@ -100,7 +100,6 @@ function ProductListingPage() {
 
   return (
     <>
-      <div className="absolute top-0" ref={topRef}></div>
       <BackButton to={ROUTES.home} label="All Categories" />
       <header className="mb-6">
         <p className="text-xs text-yellow-500 uppercase tracking-widest mb-1">

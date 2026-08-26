@@ -31,7 +31,7 @@ function ProductDetailPage() {
   const { data, error, loading } = useFetch<ProductDetail>(
     GET_PRODUCT_URL(productId),
   );
-  const { topRef } = useScrollToTop(loading);
+  useScrollToTop(loading);
 
   // data is null while loading, the hook ignores empty titles
   useDocumentTitle(data?.title);
@@ -55,7 +55,6 @@ function ProductDetailPage() {
 
   return (
     <>
-      <div className="absolute top-0" ref={topRef}></div>
       <BackButton label="Go Back" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image gallery */}

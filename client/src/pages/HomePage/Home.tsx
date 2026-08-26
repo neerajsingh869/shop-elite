@@ -11,13 +11,12 @@ import { Link } from "react-router";
 
 function HomePage() {
   const { data, error, loading } = useFetch<Category[]>(GET_CATEGORIES_URL);
-  const { topRef } = useScrollToTop(loading);
+  useScrollToTop(loading);
 
   useDocumentTitle("Shop by Category");
 
   return (
     <>
-      <div className="absolute top-0" ref={topRef}></div>
       <header className="border-b border-zinc-800 mb-8 pb-6">
         <p className="text-xs text-yellow-500 uppercase tracking-widest mb-2">
           Welcome to ShopElite

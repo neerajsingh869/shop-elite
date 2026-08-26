@@ -330,7 +330,7 @@ function RegisterPage() {
         </form>
         <p className="text-center text-sm text-zinc-400 tracking-tight">
           Already have an account?{" "}
-          <Link to={"/login"} className="text-yellow-500 cursor-pointer">
+          <Link to={"/login"} className="text-yellow-500 cursor-pointer underline">
             Sign in
           </Link>
         </p>
