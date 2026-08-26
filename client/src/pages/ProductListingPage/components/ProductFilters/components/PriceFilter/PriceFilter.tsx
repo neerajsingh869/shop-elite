@@ -22,10 +22,11 @@ function PriceFilter({
   );
 
   return (
-    <section>
+    <section aria-labelledby="filter-price">
       <header className="flex justify-between items-center mb-3">
-        <FilterTitle title="Price" />
+        <FilterTitle id="filter-price" title="Price" />
         <ResetButton
+          label="Reset price filter"
           resetFilter={() =>
             setSearchParams((prev) => {
               const next = new URLSearchParams(prev);
@@ -40,14 +41,32 @@ function PriceFilter({
         />
       </header>
       <div>
+        {/*
+          This slider had no label of any kind - it announced as just "slider".
+          aria-valuetext matters too: without it a screen reader reads the raw
+          number ("450"), with it you hear "$450".
+        */}
         <input
           className="w-full accent-yellow-500 cursor-pointer"
           type="range"
+          aria-label="Minimum price"
+          aria-valuetext={`$${sliderValue}`}
           value={sliderValue}
           min={minPrice}
           max={maxPrice}
           onChange={(e) => setSliderValue(Number(e.target.value))}
           onPointerUp={(e) => {
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.set("minPrice", e.currentTarget.value);
+              return next;
+            });
+          }}
+          /*
+            Keyboard users never fire pointerup, so before this the slider
+            could be moved with the arrow keys but the filter never applied.
+          */
+          onKeyUp={(e) => {
             setSearchParams((prev) => {
               const next = new URLSearchParams(prev);
               next.set("minPrice", e.currentTarget.value);

@@ -103,11 +103,18 @@ function LoginPage() {
         </div>
         {/* Server error */}
         {serverError && (
+          // role="alert" so a failed sign in is spoken - it used to appear
+          // silently and a screen reader user just heard nothing happen
           <div
+            role="alert"
             className="flex items-start gap-2.5 mb-4 p-3.5
             bg-red-950/50 border border-red-900/50 rounded-lg"
           >
-            <AlertCircle size={15} className="text-red-400 mt-0.5 shrink-0" />
+            <AlertCircle
+              size={15}
+              aria-hidden="true"
+              className="text-red-400 mt-0.5 shrink-0"
+            />
             <p className="text-red-400 text-sm">{serverError}</p>
           </div>
         )}
@@ -119,19 +126,24 @@ function LoginPage() {
             <div className="relative">
               <Mail
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="email"
                 type="email"
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                aria-invalid={errors.email ? true : undefined}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="you@example.com"
                 {...register("email")}
               />
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.email?.message}
-            </p>
+            {errors.email && (
+              <p id="email-error" role="alert" className="mt-1.5 text-xs text-red-400">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-1.25">
             <label className="text-zinc-400 text-xs" htmlFor="password">
@@ -140,32 +152,54 @@ function LoginPage() {
             <div className="relative">
               <Lock
                 size={16}
-                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-600"
+                aria-hidden="true"
+                className="absolute top-1/2 -translate-y-1/2 left-2.5 text-neutral-400"
               />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-600 outline-0 focus:border-yellow-600 transition duration-200 text-zinc-400"
+                aria-invalid={errors.password ? true : undefined}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
+                className="w-full border rounded-md border-zinc-800 bg-neutral-900 h-10 px-3 pl-8 pr-8 text-sm placeholder:text-neutral-400 focus:border-yellow-600 transition duration-200 text-zinc-300"
                 placeholder="••••••••••••"
                 {...register("password")}
               />
-              <button onClick={() => setShowPassword((v) => !v)} type="button">
+              {/*
+                Had no name at all, so it announced as just "button".
+                aria-pressed makes it a toggle, so the state is spoken too.
+              */}
+              <button
+                onClick={() => setShowPassword((v) => !v)}
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
                 {showPassword ? (
                   <Eye
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 ) : (
                   <EyeOff
                     size={16}
-                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-600"
+                    aria-hidden="true"
+                    className="absolute top-1/2 -translate-y-1/2 right-2.5 text-neutral-400"
                   />
                 )}
               </button>
             </div>
-            <p className="mt-1.5 text-xs text-red-400">
-              {errors.password?.message}
-            </p>
+            {errors.password && (
+              <p
+                id="password-error"
+                role="alert"
+                className="mt-1.5 text-xs text-red-400"
+              >
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <button
             disabled={isSubmitting}

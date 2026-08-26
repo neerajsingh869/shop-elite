@@ -229,7 +229,7 @@ function CheckoutModal({ isOpen, onClose, items }: CheckoutModalProps) {
                 readOnly={isAuthenticated}
                 aria-invalid={emailError ? true : undefined}
                 aria-describedby={emailError ? "checkout-email-error" : undefined}
-                className="bg-transparent text-zinc-100 text-sm flex-1 outline-none placeholder:text-zinc-500"
+                className="bg-transparent text-zinc-100 text-sm flex-1 placeholder:text-zinc-500"
               />
               {isAuthenticated && (
                 <span className="bg-zinc-800 text-emerald-400 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0">
@@ -271,7 +271,7 @@ function CheckoutModal({ isOpen, onClose, items }: CheckoutModalProps) {
                 placeholder="+91 XXXXX XXXXX"
                 aria-invalid={phoneError ? true : undefined}
                 aria-describedby={phoneError ? "checkout-phone-error" : undefined}
-                className="bg-transparent text-zinc-100 text-sm flex-1 outline-none placeholder:text-zinc-500"
+                className="bg-transparent text-zinc-100 text-sm flex-1 placeholder:text-zinc-500"
               />
             </div>
             {phoneError && (
