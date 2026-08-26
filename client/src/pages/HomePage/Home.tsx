@@ -4,6 +4,7 @@ import { GET_CATEGORIES_URL } from "../../shared/constants";
 import useFetch from "../../shared/hooks/useFetch";
 import type { Category } from "../../shared/types/api.types";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 import CategoryGridSkeleton from "./components/CategoryGrid/CategoryGridSkeleton";
 import CategoryGrid from "./components/CategoryGrid/CategoryGrid";
 import { Link } from "react-router";
@@ -11,6 +12,8 @@ import { Link } from "react-router";
 function HomePage() {
   const { data, error, loading } = useFetch<Category[]>(GET_CATEGORIES_URL);
   const { topRef } = useScrollToTop(loading);
+
+  useDocumentTitle("Shop by Category");
 
   return (
     <>

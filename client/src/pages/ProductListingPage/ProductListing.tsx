@@ -10,6 +10,7 @@ import useFetch from "../../shared/hooks/useFetch";
 import ProductListingError from "./ProductListingError";
 import ProductListingSkeleton from "./ProductListingSkeleton";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 import ProductGrid from "./components/ProductGrid/ProductGrid";
 import BackButton from "../../shared/components/ui/BackButton";
 import getCategoryName from "../../shared/utils/getCategoryName";
@@ -76,6 +77,8 @@ function ProductListingPage() {
   const { topRef } = useScrollToTop(productResponse.loading);
 
   const categoryName = getCategoryName(categorySlug);
+
+  useDocumentTitle(categoryName);
 
   if (categoryMetadata.loading) {
     return <ProductListingSkeleton />;

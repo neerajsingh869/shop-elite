@@ -7,6 +7,7 @@ import useFetch from "../../shared/hooks/useFetch";
 import Reviews from "./components/Reviews/Reviews";
 import ProductDetailError from "./ProductDetailError";
 import useScrollToTop from "../../shared/hooks/useScrollToTop";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 import BackButton from "../../shared/components/ui/BackButton";
 import ProductDetailPageSkeleton from "./ProductDetailSkeleton";
 import { GET_PRODUCT_URL, ROUTES } from "../../shared/constants";
@@ -31,6 +32,9 @@ function ProductDetailPage() {
     GET_PRODUCT_URL(productId),
   );
   const { topRef } = useScrollToTop(loading);
+
+  // data is null while loading, the hook ignores empty titles
+  useDocumentTitle(data?.title);
 
   if (loading) {
     return <ProductDetailPageSkeleton />;

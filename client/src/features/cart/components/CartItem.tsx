@@ -24,9 +24,9 @@ function CartItem({ item }: CartItemProps) {
       {/* Item info */}
       <div className="flex flex-col gap-3 flex-1 overflow-hidden">
         <div>
-          <h1 className="text-zinc-100 text-sm font-medium truncate">
+          <h3 className="text-zinc-100 text-sm font-medium truncate">
             {item.title}
-          </h1>
+          </h3>
           <p className="text-xs text-zinc-500">
             by <span className="text-zinc-400">{item.brand ?? "Unknown"}</span>
           </p>

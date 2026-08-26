@@ -23,6 +23,12 @@ function ProductFilters({
 }: ProductFiltersProps) {
   return (
     <div className="w-52 shrink-0 sticky flex flex-col gap-4 top-4">
+      {/*
+        Every filter block is an h3, so they need an h2 above them or the
+        heading outline jumps from the page h1 straight to h3. Visually the
+        sidebar already reads as filters, so this is screen reader only.
+      */}
+      <h2 className="sr-only">Filters</h2>
       <PriceFilter
         minPrice={minPrice}
         maxPrice={maxPrice}

@@ -9,6 +9,7 @@ import { AlertCircle, Eye, EyeOff, Lock, Mail } from "lucide-react";
 
 import { useAuth } from "./hooks";
 import GoogleIcon from "../../shared/components/ui/GoogleIcon";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 
 // zod schema for login form
 const User = z.object({
@@ -23,6 +24,8 @@ type User = z.infer<typeof User>;
 
 function LoginPage() {
   const { login, googleLogin } = useAuth();
+
+  useDocumentTitle("Sign in");
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);

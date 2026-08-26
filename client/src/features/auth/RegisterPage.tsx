@@ -9,6 +9,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 
 import { useAuth } from "./hooks";
 import GoogleIcon from "../../shared/components/ui/GoogleIcon";
+import useDocumentTitle from "../../shared/hooks/useDocumentTitle";
 
 const registerSchema = z
   .object({
@@ -30,6 +31,8 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 function RegisterPage() {
+  useDocumentTitle("Create account");
+
   const [serverError, setServerError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
