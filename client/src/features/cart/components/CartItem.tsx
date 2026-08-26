@@ -1,11 +1,13 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 
-import type { CartItem } from "../cart.types";
+// aliased because this file also declares a component called CartItem - without
+// the alias the default export becomes ambiguous under verbatimModuleSyntax
+import type { CartItem as CartItemData } from "../cart.types";
 import { useAppDispatch } from "../../../store/hook";
 import { decrementQuantity, incrementQuantity, removeItem } from "../cartSlice";
 
 interface CartItemProps {
-  item: CartItem;
+  item: CartItemData;
 }
 
 function CartItem({ item }: CartItemProps) {
