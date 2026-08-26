@@ -85,7 +85,10 @@ function ReviewForm({ addReview }: ReviewFormProps) {
                     setReviewStarsSelected(num);
                     setReviewStarsSelectedError("");
                   }}
-                  aria-invalid={reviewStarsSelectedError ? true : undefined}
+                  // no aria-invalid here - validity applies to the group, not
+                  // to one radio, and the role does not support it.
+                  // aria-describedby does work, so the error is read out when
+                  // any star in the group takes focus.
                   aria-describedby={
                     reviewStarsSelectedError ? "rating-error" : undefined
                   }

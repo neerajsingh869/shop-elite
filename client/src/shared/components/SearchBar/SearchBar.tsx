@@ -8,9 +8,7 @@ function SearchBar() {
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      } else if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setIsOpen(true);
       }
@@ -23,24 +21,21 @@ function SearchBar() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [isOpen]);
+  /*
+    Escape and the body scroll lock used to live here. Both moved into Modal so
+    all three overlays behave the same way instead of each doing its own thing.
+  */
 
   return (
     <>
+      {/* only mounted while open so the search hook doesn't run on every page */}
       {isOpen && <SearchBarModal setIsOpen={setIsOpen} />}
       <button
         onClick={() => setIsOpen(true)}
+        aria-label="Search products"
         className="rounded-md transition-colors duration-100 hover:text-yellow-400 hover:bg-yellow-600/15 cursor-pointer p-1.5"
       >
-        <Search size={20} />
+        <Search size={20} aria-hidden="true" />
       </button>
     </>
   );
