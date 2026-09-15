@@ -3,7 +3,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const AXE_PATH = require.resolve("axe-core");
 
-const BASE = "http://localhost:5173";
+const BASE = process.env.A11Y_BASE ?? "http://localhost:5173";
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 let failures = 0;
@@ -139,6 +139,55 @@ if (!restoreOk) failures++;
 const inertGone = await page.evaluate(() => !document.getElementById("root")?.hasAttribute("inert"));
 console.log(`  ${inertGone ? "PASS" : "FAIL"}  inert removed after close`);
 if (!inertGone) failures++;
+
+console.log("\n=== TYPING INSIDE A DIALOG (regression guard) ===");
+/*
+  Modal used to list onClose in its effect dependency array. Every caller
+  passes a fresh closure, so one keystroke in a dialog field re-ran the focus
+  effect and threw focus onto the close button - the field was unusable.
+  axe cannot see this, and the keyboard checks above cannot either, because
+  they never type before pressing Escape. So: type first, then assert.
+*/
+await page.goto(BASE + "/smartphones", { waitUntil: "domcontentloaded", timeout: 60000 });
+await page.waitForSelector('a[href*="/smartphones/"]', { timeout: 45000 });
+await page.locator('a[href*="/smartphones/"]').first().click();
+await page.waitForSelector("h1", { timeout: 45000 });
+await page.waitForTimeout(1200);
+
+const purchaseBtn = page.getByRole("button", { name: /purchase now/i });
+await purchaseBtn.click();
+await page.waitForTimeout(900);
+
+const emailSel = '[role="dialog"] input[type="email"]';
+await page.waitForSelector(emailSel, { timeout: 20000 });
+await page.focus(emailSel);
+await page.evaluate((sel) => { document.querySelector(sel).value = ""; }, emailSel);
+await page.keyboard.type("abc", { delay: 80 });
+
+// focus must still be in the field we were typing into
+const focusHeld = await page.evaluate(
+  () => document.activeElement?.getAttribute("type") === "email",
+);
+console.log(`  ${focusHeld ? "PASS" : "FAIL"}  focus stays in the field while typing`);
+if (!focusHeld) failures++;
+
+// and every character must have landed - focus theft silently truncates input
+const typed = await page.evaluate((sel) => document.querySelector(sel)?.value, emailSel);
+const allTyped = typed === "abc";
+console.log(`  ${allTyped ? "PASS" : "FAIL"}  all keystrokes reach the field (got "${typed}")`);
+if (!allTyped) failures++;
+
+// closing after typing must still restore focus to the trigger, not <body>
+await page.keyboard.press("Escape");
+await page.waitForTimeout(600);
+const restoredAfterTyping = await page.evaluate(
+  () => (document.activeElement?.textContent || "").trim(),
+);
+const restoreAfterTypingOk = /purchase now/i.test(restoredAfterTyping);
+console.log(
+  `  ${restoreAfterTypingOk ? "PASS" : "FAIL"}  focus returns to the trigger after typing (got "${restoredAfterTyping.slice(0, 40)}")`,
+);
+if (!restoreAfterTypingOk) failures++;
 
 console.log("\n=== HEADINGS / LANDMARKS (home) ===");
 const outline = await page.evaluate(() => ({

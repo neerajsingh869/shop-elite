@@ -45,6 +45,31 @@ function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  /*
+    onClose is held in a ref so the effect below can depend on isOpen alone.
+
+    Every caller passes a fresh closure - an inline arrow, or a function
+    declared in the component body - so onClose has a new identity on every
+    parent render. While it sat in the dependency array, typing a single
+    character into a field inside the dialog tore the effect down and re-ran
+    it, which re-ran the "move focus into the dialog" step: focus was yanked
+    out of the field and onto the first focusable element - in checkout, the
+    close button - so the field could not be typed into at all.
+
+    Focus restore survived this by accident: the cleanup put focus back on
+    the trigger before each re-run, so the re-captured previouslyFocused kept
+    resolving to the same element. Worth knowing, but not something to rely
+    on - the effect should only run when the dialog opens or closes.
+
+    Fixed here rather than by asking every caller to useCallback: this
+    component owns the invariant, and one missed call site would bring the
+    bug back silently.
+  */
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -73,7 +98,7 @@ function Modal({
         // capture phase + stopPropagation so a dialog opened on top of another
         // listener does not close both at once
         event.stopPropagation();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -113,7 +138,10 @@ function Modal({
       // focus on <body> and the next Tab starts from the top of the page
       previouslyFocused?.focus();
     };
-  }, [isOpen, onClose]);
+    // isOpen only - see the onCloseRef comment above. This effect sets up and
+    // tears down focus management, so it must run when the dialog opens or
+    // closes and at no other time.
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
