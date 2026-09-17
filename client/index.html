@@ -4,11 +4,40 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>ShopElite</title>
+    <meta
+      name="description"
+      content="ShopElite is a full-stack demo storefront with natural language product search, filterable category browsing and a virtualized product grid."
+    />
+    <meta name="theme-color" content="#09090b" />
+    <link rel="canonical" href="https://shopelite-ui.vercel.app/" />
+
+    <!--
+      Product images are the largest element on almost every page, and their
+      host is not known until the API responds. Opening the TCP + TLS
+      connection up front takes that handshake off the critical path.
+    -->
+    <link rel="preconnect" href="https://cdn.dummyjson.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.dummyjson.com" />
+    <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ShopElite" />
+    <meta
+      property="og:description"
+      content="Full-stack demo storefront with natural language search and a virtualized product grid."
+    />
+    <meta property="og:url" content="https://shopelite-ui.vercel.app/" />
   </head>
   <body class="bg-zinc-950">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!--
+      The Razorpay checkout script used to load here, synchronously, on every
+      page. It pulls in four more origins (checkout-static-next, api, cdn,
+      accounts.google.com) and is needed only once the user opens checkout,
+      so it is now injected on demand - see loadRazorpay in CheckoutModal.
+    -->
   </body>
 </html>

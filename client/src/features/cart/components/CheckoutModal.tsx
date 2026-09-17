@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../../store/hook";
 import { selectIsAuthenticated, selectUser } from "../../auth/authSelectors";
 import { api } from "../../../shared/lib/axios";
 import Modal from "../../../shared/components/ui/Modal";
+import { loadRazorpay } from "../loadRazorpay";
 import { clearCart } from "../cartSlice";
 
 interface CheckoutModalProps {
@@ -73,7 +74,9 @@ function CheckoutModal({ isOpen, onClose, items }: CheckoutModalProps) {
         totalAmount: total,
       });
 
-      // Step 2 - open Razorpay modal
+      // Step 2 - pull in the checkout script, then open the Razorpay modal
+      await loadRazorpay();
+
       const rzp = new window.Razorpay({
         key: data.keyId,
         amount: data.amount,
